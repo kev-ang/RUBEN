@@ -109,7 +109,11 @@ public class Jena implements BenchmarkEngine {
 
   @Override
   public int executeQuery(String query) {
-    return 0;
+    JenaQuery jenaQuery = parseQuery(query);
+    Iterator<Statement> statementIterator =
+        infModel.listStatements(
+            jenaQuery.getSubject(), jenaQuery.getProperty(), jenaQuery.getObject());
+    return countQueryResults(statementIterator);
   }
 
   @Override
@@ -144,6 +148,15 @@ public class Jena implements BenchmarkEngine {
     }
 
     return new JenaQuery(subject, property, object);
+  }
+
+  private int countQueryResults(Iterator<Statement> statementIterator) {
+    int count = 0;
+    while (statementIterator.hasNext() && !Thread.interrupted()) {
+      count++;
+      statementIterator.next();
+    }
+    return count;
   }
 
   @AllArgsConstructor

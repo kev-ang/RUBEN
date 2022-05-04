@@ -116,6 +116,11 @@ public class Drools implements BenchmarkEngine {
 
   @Override
   public int executeQuery(String query) {
+    kieSession.fireAllRules();
+    if (StringUtils.isNotEmpty(query)) {
+      QueryResults queryResults = kieSession.getQueryResults("selectQuery", query);
+      return queryResults.size();
+    }
     return 0;
   }
 

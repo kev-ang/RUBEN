@@ -91,8 +91,7 @@ public class Stardog implements BenchmarkEngine {
       SelectQuery aQuery =
           databaseConnection
               .select("select * where {" + query.getQuery() + "}")
-              .reasoning(true)
-              .timeout(QUERY_TIMEOUT);
+              .reasoning(true);
 
       long start = System.currentTimeMillis();
       SelectQueryResult result = aQuery.execute();
@@ -112,7 +111,12 @@ public class Stardog implements BenchmarkEngine {
 
   @Override
   public int executeQuery(String query) {
-    return 0;
+    SelectQuery aQuery =
+        databaseConnection
+            .select("select * where {" + query + "}")
+            .reasoning(true);
+    SelectQueryResult result = aQuery.execute();
+    return (int) result.stream().count();
   }
 
   @Override
