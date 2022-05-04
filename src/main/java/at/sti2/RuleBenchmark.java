@@ -3,6 +3,7 @@ package at.sti2;
 import at.sti2.benchmark.BenchmarkTest;
 import at.sti2.benchmark.BenchmarkUtils;
 import at.sti2.configuration.BenchmarkConfiguration;
+import at.sti2.configuration.ReasoningEngineConfiguration;
 import at.sti2.engines.BenchmarkEngine;
 import at.sti2.model.benchmark_result.BenchmarkEngineResult;
 import at.sti2.model.benchmark_result.BenchmarkResult;
@@ -19,10 +20,9 @@ public class RuleBenchmark {
     BenchmarkConfiguration benchmarkConfiguration =
         BenchmarkUtils.load(BENCHMARK_ENGINE_CONFIGURATION_FILE, BenchmarkConfiguration.class);
 
-    List<BenchmarkEngine> benchmarkEngines =
-        BenchmarkUtils.loadBenchmarkEngines(benchmarkConfiguration.getBenchmarkEngines());
+    for (ReasoningEngineConfiguration benchmarkEngineConfig : benchmarkConfiguration.getBenchmarkEngines()) {
+      BenchmarkEngine benchmarkEngine = BenchmarkUtils.loadBenchmarkEngine(benchmarkEngineConfig);
 
-    for (BenchmarkEngine benchmarkEngine : benchmarkEngines) {
       BenchmarkEngineResult benchmarkEngineResult =
           BenchmarkTest.execute(benchmarkEngine, benchmarkConfiguration.getTestCases());
       benchmarkResult.addBenchmarkEngineResult(benchmarkEngineResult);

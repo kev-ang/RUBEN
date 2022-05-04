@@ -14,10 +14,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
@@ -34,6 +36,19 @@ public class Stardog implements BenchmarkEngine {
 
     private AdminConnection adminConnection;
     private Connection databaseConnection;
+
+    public Stardog() {
+        log.info("Setting up docker container for stardog evaluation.");
+        try {
+            BenchmarkUtils.startContainerForEngine(ENGINE_NAME);
+            log.info(
+                "Started docker container, waiting for 30 seconds to make sure it is started...");
+            Thread.sleep(30 * 1000);
+            log.info("Stardog should be started now!");
+        } catch (Exception e) {
+            log.error("Error setting up docker for stardog!", e);
+        }
+    }
 
     @Override
     public String getEngineName() {
@@ -66,11 +81,13 @@ public class Stardog implements BenchmarkEngine {
                                            .connect();
 
                 databaseConnection.begin();
-                List<Statement> statements = prepareStatements(absoluteDataPath);
+                List<Statement> statements =
+                    prepareStatements(absoluteDataPath);
                 databaseConnection.add().graph(statements);
 
                 String absoluteRulePath =
-                    BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".ttl", false);
+                    BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".ttl",
+                                               false);
                 log.info("Loading rule from path: {}", absoluteRulePath);
                 databaseConnection.add().io()
                                   .file(new File(absoluteRulePath).toPath());
@@ -86,7 +103,7 @@ public class Stardog implements BenchmarkEngine {
         SelectQuery aQuery =
             databaseConnection
                 .select("select * where {" + query + "}")
-                .reasoning(true);
+                .reasoning(true).timeout(30 * 60 * 1000);
         SelectQueryResult result = aQuery.execute();
         int numberOfResults = (int) result.stream().count();
         result.close();
@@ -100,6 +117,11 @@ public class Stardog implements BenchmarkEngine {
 
     @Override
     public void shutDown() {
+        try {
+            BenchmarkUtils.stopContainerForEngine(ENGINE_NAME);
+        } catch (IOException e) {
+            log.error("Error stopping docker container for stardog!", e);
+        }
     }
 
     private void dropDatabase(AdminConnection aAdminConnection) {

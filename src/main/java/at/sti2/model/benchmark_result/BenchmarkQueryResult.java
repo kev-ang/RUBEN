@@ -12,5 +12,10 @@ public class BenchmarkQueryResult {
     private String query;
     private long timeSpent;
     private int numOfResults;
+    private Exception exception;
+
+    public BenchmarkQueryResult(String query){
+        this.query = query;
+    }
 
 }

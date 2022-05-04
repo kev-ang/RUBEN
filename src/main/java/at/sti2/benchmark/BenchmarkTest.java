@@ -2,6 +2,7 @@ package at.sti2.benchmark;
 
 import at.sti2.configuration.TestCaseConfiguration;
 import at.sti2.engines.BenchmarkEngine;
+import at.sti2.exception.MemoryLimitExceededException;
 import at.sti2.model.benchmark_result.BenchmarkEngineResult;
 import at.sti2.model.benchmark_result.BenchmarkQueryResult;
 import at.sti2.model.benchmark_result.BenchmarkTestCaseResult;
@@ -67,28 +68,35 @@ public abstract class BenchmarkTest {
                                                QueryContainer queryContainer) {
         for (Query query : queryContainer.getQueries()) {
             log.info("Evaluating query: {}", query.getQuery());
+            BenchmarkQueryResult queryResultObject =
+                new BenchmarkQueryResult(query.getName());
             Future<Integer> resultFuture = null;
+            long start = System.currentTimeMillis();
             try {
-                long start = System.currentTimeMillis();
                 resultFuture =
                     executor.submit(
                         new QueryExecutionTask(engine, query.getQuery()));
                 Integer numberOfResults =
                     resultFuture.get(30, TimeUnit.MINUTES);
-                long end = System.currentTimeMillis();
-                testCaseResults.put(
-                    query.getName(),
-                    new BenchmarkQueryResult(query.getName(), (end - start),
-                                             numberOfResults));
+                queryResultObject.setNumOfResults(numberOfResults);
             } catch (TimeoutException e) {
                 resultFuture.cancel(true);
+                queryResultObject.setException(e);
                 log.info("Query evaluation timed out!");
-            } catch (IllegalStateException e) {
+            } catch (MemoryLimitExceededException e) {
+                queryResultObject.setException(e);
                 log.error("Query evaluation reached memory limit!", e);
             } catch (Exception e) {
+                queryResultObject.setException(e);
                 log.error("Error evaluating query {} with SemReasoner!",
                           query.getName(), e);
+            } finally {
+                long end = System.currentTimeMillis();
+                queryResultObject.setTimeSpent((end - start));
             }
+            testCaseResults.put(
+                query.getName(),
+                queryResultObject);
         }
     }
 }

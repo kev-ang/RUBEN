@@ -1,6 +1,7 @@
 package at.sti2.benchmark;
 
 import at.sti2.engines.BenchmarkEngine;
+import at.sti2.exception.MemoryLimitExceededException;
 import java.util.concurrent.Callable;
 
 public class QueryExecutionTask implements Callable<Integer> {
@@ -18,7 +19,7 @@ public class QueryExecutionTask implements Callable<Integer> {
         try {
             return engine.executeQuery(query);
         } catch (OutOfMemoryError e) {
-            throw new IllegalStateException("Thread reached the memory limit!");
+            throw new MemoryLimitExceededException("Thread reached the memory limit!");
         }
     }
 }
