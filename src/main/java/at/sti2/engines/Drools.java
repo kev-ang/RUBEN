@@ -2,22 +2,12 @@ package at.sti2.engines;
 
 import at.sti2.benchmark.BenchmarkUtils;
 import at.sti2.configuration.TestCaseConfiguration;
-import at.sti2.model.benchmark_result.BenchmarkQueryResult;
-import at.sti2.model.query.Query;
-import at.sti2.model.query.QueryContainer;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.kie.api.KieServices;
@@ -79,39 +69,6 @@ public class Drools implements BenchmarkEngine {
         log.error("Error loading data into Drools!", e);
       }
     }
-  }
-
-  @Override
-  public Map<String, BenchmarkQueryResult> executeQueries(TestCaseConfiguration testCase) {
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    Map<String, BenchmarkQueryResult> testCaseResults = new HashMap<>();
-    String queryFileClassPath =
-        BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, "_queries.json", true);
-    QueryContainer queryContainer = BenchmarkUtils.load(queryFileClassPath, QueryContainer.class);
-    if (queryContainer != null) {
-      for (Query query : queryContainer.getQueries()) {
-        log.info("Evaluating query: {}", query.getQuery());
-
-        Future<QueryResults> resultFuture = null;
-        try {
-          long start = System.currentTimeMillis();
-          resultFuture = executor.submit(new DroolsQueryTask(query.getQuery()));
-          QueryResults results = resultFuture.get(30, TimeUnit.MINUTES);
-          long end = System.currentTimeMillis();
-          int numberOfResults = results == null ? 0 : results.size();
-          testCaseResults.put(
-              query.getName(),
-              new BenchmarkQueryResult(query.getQuery(), (end - start), numberOfResults));
-        } catch (TimeoutException e) {
-          resultFuture.cancel(true);
-          log.info("TIMEOUT!");
-        } catch (Exception e) {
-          log.error("Error evaluating query {} with Drools!", query.getName(), e);
-        }
-      }
-    }
-    executor.shutdownNow();
-    return testCaseResults;
   }
 
   @Override
@@ -584,24 +541,6 @@ public class Drools implements BenchmarkEngine {
 
     public String toString() {
       return "win(" + this.getFirst() + ").";
-    }
-  }
-
-  class DroolsQueryTask implements Callable<QueryResults> {
-
-    private String dataClassName;
-
-    public DroolsQueryTask(String dataClassName) {
-      this.dataClassName = dataClassName;
-    }
-
-    @Override
-    public QueryResults call() throws Exception {
-      kieSession.fireAllRules();
-      if (StringUtils.isNotEmpty(dataClassName)) {
-        return kieSession.getQueryResults("selectQuery", dataClassName);
-      }
-      return null;
     }
   }
 }

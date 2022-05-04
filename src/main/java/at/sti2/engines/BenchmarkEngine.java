@@ -12,9 +12,6 @@ public interface BenchmarkEngine {
 
     void prepare(TestCaseConfiguration testCase);
 
-    Map<String, BenchmarkQueryResult> executeQueries(
-        TestCaseConfiguration testCase);
-
     int executeQuery(String query) throws Exception;
 
     void cleanUp();

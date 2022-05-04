@@ -2,9 +2,6 @@ package at.sti2.engines;
 
 import at.sti2.benchmark.BenchmarkUtils;
 import at.sti2.configuration.TestCaseConfiguration;
-import at.sti2.model.benchmark_result.BenchmarkQueryResult;
-import at.sti2.model.query.Query;
-import at.sti2.model.query.QueryContainer;
 import com.complexible.stardog.api.Connection;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.api.SelectQuery;
@@ -18,139 +15,117 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class Stardog implements BenchmarkEngine {
 
-  private static final String ENGINE_NAME = "Stardog";
+    private static final String ENGINE_NAME = "Stardog";
 
-  private static final String DATABASE_IDENTIFIER = "OpenRuleBenchDatabase";
-  private static final String SERVER_URL = "http://localhost:5820";
-  private static final String USER = "admin";
-  private static final String PASSWORD = "admin";
+    private static final String DATABASE_IDENTIFIER = "OpenRuleBenchDatabase";
+    private static final String SERVER_URL = "http://localhost:5820";
+    private static final String USER = "admin";
+    private static final String PASSWORD = "admin";
 
-  private static final String NAMESPACE = "http://sti2.at/";
+    private static final String NAMESPACE = "http://sti2.at/";
 
-  // 30 mins timeout
-  private static final long QUERY_TIMEOUT = 30 * 60 * 1000;
+    private AdminConnection adminConnection;
+    private Connection databaseConnection;
 
-  private AdminConnection adminConnection;
-  private Connection databaseConnection;
-
-  @Override
-  public String getEngineName() {
-    return ENGINE_NAME;
-  }
-
-  @Override
-  public void setSettings(Map<String, Object> settings) {
-  }
-
-  @Override
-  public void prepare(TestCaseConfiguration testCase) {
-    try {
-      adminConnection =
-          AdminConnectionConfiguration.toServer(SERVER_URL).credentials(USER, PASSWORD).connect();
-
-      dropDatabase(adminConnection);
-      adminConnection.newDatabase(DATABASE_IDENTIFIER).create();
-
-      databaseConnection =
-          ConnectionConfiguration.to(DATABASE_IDENTIFIER)
-              .server(SERVER_URL)
-              .credentials(USER, PASSWORD)
-              .connect();
-
-      databaseConnection.begin();
-      List<Statement> statements = prepareStatements(testCase);
-      databaseConnection.add().graph(statements);
-
-      String absoluteRulePath = BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".ttl", false);
-      log.info("Loading rule from path: {}", absoluteRulePath);
-      databaseConnection.add().io().file(new File(absoluteRulePath).toPath());
-      databaseConnection.commit();
-    } catch (Exception e) {
-      log.error("Error while preparing stardog!", e);
+    @Override
+    public String getEngineName() {
+        return ENGINE_NAME;
     }
-  }
 
-  @Override
-  public Map<String, BenchmarkQueryResult> executeQueries(TestCaseConfiguration testCase) {
-    Map<String, BenchmarkQueryResult> testCaseResults = new HashMap<>();
-    String queryFileClassPath =
-        BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, "_queries.json", true);
-    QueryContainer queryContainer = BenchmarkUtils.load(queryFileClassPath, QueryContainer.class);
-
-    for (Query query : queryContainer.getQueries()) {
-      log.info("Evaluating query: {}", query.getQuery());
-
-      SelectQuery aQuery =
-          databaseConnection
-              .select("select * where {" + query.getQuery() + "}")
-              .reasoning(true);
-
-      long start = System.currentTimeMillis();
-      SelectQueryResult result = aQuery.execute();
-      long end = System.currentTimeMillis();
-      long numberOfResults = result.stream().count();
-      log.info(
-          "Query evaluation finished in {}ms delivering {} results",
-          (end - start),
-          numberOfResults);
-      result.close();
-      testCaseResults.put(
-          query.getName(),
-          new BenchmarkQueryResult(query.getQuery(), (end - start), (int) numberOfResults));
+    @Override
+    public void setSettings(Map<String, Object> settings) {
     }
-    return testCaseResults;
-  }
 
-  @Override
-  public int executeQuery(String query) {
-    SelectQuery aQuery =
-        databaseConnection
-            .select("select * where {" + query + "}")
-            .reasoning(true);
-    SelectQueryResult result = aQuery.execute();
-    return (int) result.stream().count();
-  }
+    @Override
+    public void prepare(TestCaseConfiguration testCase) {
+        String absoluteDataPath =
+            BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".stardog",
+                                       false);
+        if (StringUtils.isNotEmpty(absoluteDataPath)) {
+            try {
+                adminConnection =
+                    AdminConnectionConfiguration.toServer(SERVER_URL)
+                                                .credentials(USER, PASSWORD)
+                                                .connect();
 
-  @Override
-  public void cleanUp() {
-    dropDatabase(adminConnection);
-  }
+                dropDatabase(adminConnection);
+                adminConnection.newDatabase(DATABASE_IDENTIFIER).create();
 
-  @Override
-  public void shutDown() {}
+                databaseConnection =
+                    ConnectionConfiguration.to(DATABASE_IDENTIFIER)
+                                           .server(SERVER_URL)
+                                           .credentials(USER, PASSWORD)
+                                           .connect();
 
-  private void dropDatabase(AdminConnection aAdminConnection) {
-    if (aAdminConnection.list().contains(DATABASE_IDENTIFIER)) {
-      aAdminConnection.drop(DATABASE_IDENTIFIER);
+                databaseConnection.begin();
+                List<Statement> statements = prepareStatements(absoluteDataPath);
+                databaseConnection.add().graph(statements);
+
+                String absoluteRulePath =
+                    BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".ttl", false);
+                log.info("Loading rule from path: {}", absoluteRulePath);
+                databaseConnection.add().io()
+                                  .file(new File(absoluteRulePath).toPath());
+                databaseConnection.commit();
+            } catch (Exception e) {
+                log.error("Error while preparing stardog!", e);
+            }
+        }
     }
-  }
 
-  private List<Statement> prepareStatements(TestCaseConfiguration testCase) throws IOException {
-    List<Statement> statements = new ArrayList<>();
-    String absoluteDataPath = BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".stardog", false);
-    log.info("Loading data from path: {}", absoluteDataPath);
-    FileReader dataInput = new FileReader(absoluteDataPath);
-    BufferedReader bufRead = new BufferedReader(dataInput);
-    String first, second, line = bufRead.readLine();
-    while (line != null) {
-      first = bufRead.readLine();
-      second = bufRead.readLine();
-      statements.add(
-          Values.statement(
-              Values.iri(NAMESPACE, first),
-              Values.iri(NAMESPACE, line),
-              Values.iri(NAMESPACE, second)));
-      line = bufRead.readLine();
+    @Override
+    public int executeQuery(String query) {
+        SelectQuery aQuery =
+            databaseConnection
+                .select("select * where {" + query + "}")
+                .reasoning(true);
+        SelectQueryResult result = aQuery.execute();
+        int numberOfResults = (int) result.stream().count();
+        result.close();
+        return numberOfResults;
     }
-    bufRead.close();
-    return statements;
-  }
+
+    @Override
+    public void cleanUp() {
+        dropDatabase(adminConnection);
+    }
+
+    @Override
+    public void shutDown() {
+    }
+
+    private void dropDatabase(AdminConnection aAdminConnection) {
+        if (aAdminConnection.list().contains(DATABASE_IDENTIFIER)) {
+            aAdminConnection.drop(DATABASE_IDENTIFIER);
+        }
+    }
+
+    private List<Statement> prepareStatements(String absoluteDataPath)
+        throws IOException {
+        List<Statement> statements = new ArrayList<>();
+        log.info("Loading data from path: {}", absoluteDataPath);
+        FileReader dataInput = new FileReader(absoluteDataPath);
+        BufferedReader bufRead = new BufferedReader(dataInput);
+        String first, second, line = bufRead.readLine();
+        while (line != null) {
+            first = bufRead.readLine();
+            second = bufRead.readLine();
+            statements.add(
+                Values.statement(
+                    Values.iri(NAMESPACE, first),
+                    Values.iri(NAMESPACE, line),
+                    Values.iri(NAMESPACE, second)));
+            line = bufRead.readLine();
+        }
+        bufRead.close();
+        return statements;
+    }
 }
