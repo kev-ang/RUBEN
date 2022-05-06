@@ -96,6 +96,11 @@ runnable JAR.
 7. In the same folder as the JAR a new file `Results.json` will contain all
    the evaluation results
 
+## Contribution
+
+If you want to contribute to this evaluation framework feel free to open a pull
+request or contact us (kevin.angele[at]sti2.at).
+
 ## References
 
 [1]  Liang, S., Fodor, P., Wan, H., Kifer, M.: Openrulebench: An analysis of the
