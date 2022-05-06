@@ -22,7 +22,7 @@ docker installation is required. If you do not have docker installed, go
 to https://docs.docker.com/get-docker/
 
 Evaluating [SemReasoner](https://github.com/kev-ang/SemReasoner) requires the
-library that is available [here](https://github.com/kev-ang/SemReasoner). Copy
+library that is available (on request). Copy
 this into the `/lib/` folder of the project.
 
 One of the evaluated reasoning engines is [Stardog](https://stardog.com) which
