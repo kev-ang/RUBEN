@@ -92,7 +92,7 @@ public abstract class BenchmarkTest {
                     break;
                 } catch (ExecutionException e) {
                     queryResultObject.setException(e.getMessage());
-                    log.info("Execution exception thrown");
+                    log.info("Execution exception thrown", e);
                     break;
                 } catch (Exception e) {
                     queryResultObject.setException(e.getMessage());

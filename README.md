@@ -93,8 +93,45 @@ runnable JAR.
 7. Execute the jar
    using `java -Xmx32g -jar OpenRuleBenchmark-1.0-SNAPSHOT-jar-with-dependencies.jar ./Benchmark_Configuration.json`
 8. When the evaluation is done, the console will show "DONE!"
-7. In the same folder as the JAR a new file `Results.json` will contain all
+9. In the same folder as the JAR a new file `Results.json` will contain all
    the evaluation results
+
+## Latest Benchmarking Results
+
+**Preview** more are comming within May 2022.
+
+### Large joins, join 1, no query bindings
+|    query    | a(X,Y) | a(X,Y) | b1(X,Y) | b1(X,Y)| b2(X,Y) | b2(X,Y)|
+|:-----------:|--------|--------|---------|--------|---------|--------|
+| size        | 50000  | 250000 |  50000  | 250000 |  50000  | 250000 |
+| Drools      |        |        |         |        |         |        |
+| Jena        |        |        |         |        |         |        |
+| SemReasoner |        |        |         |        |         |        |
+| Stardog     |        |        |         |        |         |        |
+
+### Datalog recursion, same generation, no query bindings
+|     size    | 50000 | 50000 | 500000 | 500000 |
+|:-----------:|-------|-------|--------|--------|
+| cyclic data | no    |  yes  |   no   |   yes  |
+| Drools      |       |       |        |        |
+| Jena        |       |       |        |        |
+| SemReasoner |       |       |        |        |
+| Stardog     |       |       |        |        |
+
+### Datalog recursion, transitive closure, no query bindings
+|     size    | 50000 | 50000 | 500000 | 500000 |
+|:-----------:|-------|-------|--------|--------|
+| cyclic data | no    |  yes  |   no   |   yes  |
+| Drools      |       |       |        |        |
+| Jena        |       |       |        |        |
+| SemReasoner |       |       |        |        |
+| Stardog     |       |       |        |        |
+
+## Known Issues
+...
+
+## Future Work
+...
 
 ## Contribution
 
