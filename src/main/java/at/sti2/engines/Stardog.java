@@ -7,23 +7,12 @@ import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.api.SelectQuery;
 import com.complexible.stardog.api.admin.AdminConnection;
 import com.complexible.stardog.api.admin.AdminConnectionConfiguration;
-import com.stardog.stark.Statement;
-import com.stardog.stark.Values;
 import com.stardog.stark.io.RDFFormats;
 import com.stardog.stark.query.SelectQueryResult;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class Stardog implements BenchmarkEngine {
@@ -97,12 +86,9 @@ public class Stardog implements BenchmarkEngine {
                                            .connect();
 
                 databaseConnection.begin();
-                List<Statement> statements =
-                    prepareStatements(absoluteDataPath);
 
-                //statements.forEach(
-                //    statement -> databaseConnection.add().statement(statement));
 
+                log.info("Loading data from path: {}", absoluteDataPath);
                 databaseConnection.add().io().format(RDFFormats.NTRIPLES)
                                   .stream(
                                       new FileInputStream(absoluteDataPath));
@@ -143,7 +129,7 @@ public class Stardog implements BenchmarkEngine {
     public void shutDown() {
         try {
             BenchmarkUtils.stopContainers();
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             log.error("Error stopping docker container for stardog!", e);
         }
     }
@@ -152,26 +138,5 @@ public class Stardog implements BenchmarkEngine {
         if (aAdminConnection.list().contains(DATABASE_IDENTIFIER)) {
             aAdminConnection.drop(DATABASE_IDENTIFIER);
         }
-    }
-
-    private List<Statement> prepareStatements(String absoluteDataPath)
-        throws IOException {
-        List<Statement> statements = new ArrayList<>();
-        log.info("Loading data from path: {}", absoluteDataPath);
-        FileReader dataInput = new FileReader(absoluteDataPath);
-        BufferedReader bufRead = new BufferedReader(dataInput);
-        String first, second, line = bufRead.readLine();
-        while (line != null) {
-            first = bufRead.readLine();
-            second = bufRead.readLine();
-            statements.add(
-                Values.statement(
-                    Values.iri(NAMESPACE, first),
-                    Values.iri(NAMESPACE, line),
-                    Values.iri(NAMESPACE, second)));
-            line = bufRead.readLine();
-        }
-        bufRead.close();
-        return statements;
     }
 }

@@ -2,7 +2,6 @@ package at.sti2.benchmark;
 
 import at.sti2.configuration.TestCaseConfiguration;
 import at.sti2.engines.BenchmarkEngine;
-import at.sti2.exception.MemoryLimitExceededException;
 import at.sti2.model.benchmark_result.BenchmarkEngineResult;
 import at.sti2.model.benchmark_result.BenchmarkQueryResult;
 import at.sti2.model.benchmark_result.BenchmarkTestCaseResult;
@@ -91,18 +90,11 @@ public abstract class BenchmarkTest {
                     queryResultObject.setException("TIMEOUT");
                     log.info("Query evaluation timed out!");
                     break;
-                } catch (MemoryLimitExceededException e) {
-                    resultFuture.cancel(true);
-                    queryResultObject.setException("MEMORY LIMIT EXCEEDED");
-                    log.error("Query evaluation reached memory limit!", e);
-                    break;
                 } catch (ExecutionException e) {
-                    resultFuture.cancel(true);
                     queryResultObject.setException(e.getMessage());
                     log.info("Execution exception thrown");
                     break;
                 } catch (Exception e) {
-                    resultFuture.cancel(true);
                     queryResultObject.setException(e.getMessage());
                     log.error("Error evaluating query {} with SemReasoner!",
                               query.getName(), e);
@@ -117,6 +109,4 @@ public abstract class BenchmarkTest {
             }
         }
     }
-
-
 }

@@ -29,11 +29,11 @@ public class RuleBenchmark {
             benchmarkResult.addBenchmarkEngineResult(benchmarkEngineResult);
         }
         BenchmarkUtils.writeResults(benchmarkResult);
-        log.info("DONE!");
     }
 
     public static void main(String[] args) {
         RuleBenchmark benchmark = new RuleBenchmark();
         benchmark.runEvaluation(args[0]);
+        log.info("DONE!");
     }
 }

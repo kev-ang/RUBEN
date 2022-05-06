@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -26,13 +25,10 @@ public class BenchmarkUtils {
             try {
                 InputStream
                     fileInputStream = new FileInputStream(path);
-                if (fileInputStream != null) {
-                    String fileContent =
-                        IOUtils.toString(
-                            fileInputStream, Charset.defaultCharset());
-                    return om.readValue(fileContent, parseToClass);
-                }
-                return null;
+                String fileContent =
+                    IOUtils.toString(
+                        fileInputStream, Charset.defaultCharset());
+                return om.readValue(fileContent, parseToClass);
             } catch (Exception e) {
                 log.error("Error loading file content!", e);
                 throw new IllegalStateException(
@@ -75,7 +71,7 @@ public class BenchmarkUtils {
                                      String engineName,
                                      TestCaseConfiguration testCase,
                                      String fileEnding) {
-        var testFilePath =
+        return
             String.join(
                 "/",
                 testDataPath,
@@ -83,7 +79,6 @@ public class BenchmarkUtils {
                 testCase.getCategory(),
                 testCase.getTestName(),
                 testCase.getTestCaseIdentifier() + fileEnding);
-        return testFilePath;
     }
 
     public static boolean fileExists(String filePath) {
@@ -91,7 +86,7 @@ public class BenchmarkUtils {
     }
 
     public static void startContainerForEngine(String engineName)
-        throws IOException, URISyntaxException {
+        throws IOException {
         String dockerComposeFilePath = new File(".").getCanonicalPath();
         String dockerComposeCommand = "docker-compose -f " +
                                       dockerComposeFilePath +
@@ -104,7 +99,7 @@ public class BenchmarkUtils {
     }
 
     public static void stopContainers()
-        throws IOException, URISyntaxException {
+        throws IOException {
         String dockerComposeFilePath = new File(".").getCanonicalPath();
         String dockerComposeCommand = "docker-compose -f " +
                                       dockerComposeFilePath +
