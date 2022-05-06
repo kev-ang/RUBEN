@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+
+  stardog:
+    image: stardog/stardog
+    ports:
+      - "5820:5820"
+    volumes:
+      - /Users/Kevin/Desktop/StardogHome/:/var/opt/stardog
+    environment:
+      STARDOG_SERVER_JAVA_ARGS: '-Xmx32g -Xms32g -XX:MaxDirectMemorySize=32g'

@@ -3,46 +3,43 @@ package at.sti2.benchmark;
 import at.sti2.configuration.ReasoningEngineConfiguration;
 import at.sti2.configuration.TestCaseConfiguration;
 import at.sti2.engines.BenchmarkEngine;
-import at.sti2.engines.SemReasoner;
-import at.sti2.engines.Stardog;
 import at.sti2.model.benchmark_result.BenchmarkResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
 @Slf4j
 public class BenchmarkUtils {
 
-    public static final String REASONING_ENGINE_ROOT = "/reasoning_engines";
-
     private static final ObjectMapper om = new ObjectMapper();
 
-    public static <T> T load(String classpath, Class<T> parseToClass) {
-        try {
-            InputStream
-                fileInputStream =
-                BenchmarkUtils.class.getResourceAsStream(classpath);
-            if (fileInputStream != null) {
-                String fileContent =
-                    IOUtils.toString(
-                        fileInputStream, Charset.defaultCharset());
-                return om.readValue(fileContent, parseToClass);
+    public static <T> T load(String path, Class<T> parseToClass) {
+        if (fileExists(path)) {
+            try {
+                InputStream
+                    fileInputStream = new FileInputStream(path);
+                if (fileInputStream != null) {
+                    String fileContent =
+                        IOUtils.toString(
+                            fileInputStream, Charset.defaultCharset());
+                    return om.readValue(fileContent, parseToClass);
+                }
+                return null;
+            } catch (Exception e) {
+                log.error("Error loading file content!", e);
+                throw new IllegalStateException(
+                    "Can not load and parse file content!");
             }
-            return null;
-        } catch (Exception e) {
-            log.error("Error loading file content!", e);
-            throw new IllegalStateException(
-                "Can not load and parse file content!");
         }
+        return null;
     }
 
     public static BenchmarkEngine loadBenchmarkEngine(
@@ -53,6 +50,8 @@ public class BenchmarkUtils {
                     Class.forName(reasoningEngineConfiguration.getClasspath())
                          .getDeclaredConstructor()
                          .newInstance();
+            benchmarkEngine.setEngineName(
+                reasoningEngineConfiguration.getName());
             benchmarkEngine.setSettings(
                 reasoningEngineConfiguration.getSettings());
             return benchmarkEngine;
@@ -72,44 +71,45 @@ public class BenchmarkUtils {
         }
     }
 
-    public static String getFilePath(
-        String engineName, TestCaseConfiguration testCase, String fileEnding,
-        boolean isClassPath) {
+    public static String getFilePath(String testDataPath,
+                                     String engineName,
+                                     TestCaseConfiguration testCase,
+                                     String fileEnding) {
         var testFilePath =
             String.join(
                 "/",
-                BenchmarkUtils.REASONING_ENGINE_ROOT,
+                testDataPath,
                 engineName,
                 testCase.getCategory(),
                 testCase.getTestName(),
                 testCase.getTestCaseIdentifier() + fileEnding);
-        if (!isClassPath) {
-            URL fileURL = SemReasoner.class.getResource(testFilePath);
-            if (fileURL != null) {
-                return fileURL.getPath();
-            }
-            return null;
-        }
         return testFilePath;
     }
 
+    public static boolean fileExists(String filePath) {
+        return new File(filePath).exists();
+    }
+
     public static void startContainerForEngine(String engineName)
-        throws IOException {
+        throws IOException, URISyntaxException {
+        String dockerComposeFilePath = new File(".").getCanonicalPath();
         String dockerComposeCommand = "docker-compose -f " +
-                                      BenchmarkUtils.class.getResource(
-                                          "/docker-compose.yml").getPath() +
-                                      " up -d " + engineName.toLowerCase();
+                                      dockerComposeFilePath +
+                                      "/docker-compose.yml" +
+                                      " up -d " +
+                                      engineName.toLowerCase();
         log.info("Executing: {}", dockerComposeCommand);
         Process p = Runtime.getRuntime().exec(dockerComposeCommand);
         printProcessInputStream(p.getInputStream());
     }
 
-    public static void stopContainerForEngine(String engineName)
-        throws IOException {
+    public static void stopContainers()
+        throws IOException, URISyntaxException {
+        String dockerComposeFilePath = new File(".").getCanonicalPath();
         String dockerComposeCommand = "docker-compose -f " +
-                                      BenchmarkUtils.class.getResource(
-                                          "/docker-compose.yml").getPath() +
-                                      " down -v " + engineName.toLowerCase();
+                                      dockerComposeFilePath +
+                                      "/docker-compose.yml" +
+                                      " down -v";
         log.info("Executing: {}", dockerComposeCommand);
         Process p = Runtime.getRuntime().exec(dockerComposeCommand);
         printProcessInputStream(p.getInputStream());

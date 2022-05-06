@@ -10,6 +10,9 @@ public class BenchmarkConfiguration {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("testDataPath")
+    private String testDataPath;
+
     @JsonProperty("engines")
     private List<ReasoningEngineConfiguration> benchmarkEngines;
 

@@ -23,7 +23,9 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class SemReasoner implements BenchmarkEngine {
 
-    private static final String ENGINE_NAME = "SemReasoner";
+    private static final String ENGINE_IDENTIFIER = "SemReasoner";
+
+    private String engineName;
 
     private Map<String, Object> settings;
 
@@ -31,8 +33,18 @@ public class SemReasoner implements BenchmarkEngine {
     private DeductiveDatabase ddb;
 
     @Override
+    public String getEngineIdentifier() {
+        return ENGINE_IDENTIFIER;
+    }
+
+    @Override
     public String getEngineName() {
-        return ENGINE_NAME;
+        return engineName;
+    }
+
+    @Override
+    public void setEngineName(String engineName) {
+        this.engineName = engineName;
     }
 
     @Override
@@ -41,14 +53,15 @@ public class SemReasoner implements BenchmarkEngine {
     }
 
     @Override
-    public void prepare(TestCaseConfiguration testCase) {
+    public void prepare(String testDataPath, TestCaseConfiguration testCase) {
         String absoluteDataFilePath =
-            BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".fct", false);
-        if (StringUtils.isNotEmpty(absoluteDataFilePath)) {
+            BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER,
+                                       testCase, ".fct");
+        if (BenchmarkUtils.fileExists(absoluteDataFilePath)) {
             try {
                 String absoluteRuleFilePath =
-                    BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".rls",
-                                               false);
+                    BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER,
+                                               testCase, ".rls");
                 Configuration configuration = new Configuration();
                 configuration.setEDBStorageType(getStorageType());
                 configuration.setTopDownReasoning(isTopDownReasoningEnabled());

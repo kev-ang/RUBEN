@@ -24,7 +24,9 @@ import org.codehaus.plexus.util.StringUtils;
 @Slf4j
 public class Jena implements BenchmarkEngine {
 
-    private static final String ENGINE_NAME = "Jena";
+    private static final String ENGINE_IDENTIFIER = "Jena";
+
+    private String engineName;
 
     private static final String NAMESPACE = "";
 
@@ -34,8 +36,18 @@ public class Jena implements BenchmarkEngine {
     private InfModel infModel;
 
     @Override
+    public String getEngineIdentifier() {
+        return ENGINE_IDENTIFIER;
+    }
+
+    @Override
     public String getEngineName() {
-        return ENGINE_NAME;
+        return engineName;
+    }
+
+    @Override
+    public void setEngineName(String engineName) {
+        this.engineName = engineName;
     }
 
     @Override
@@ -43,10 +55,10 @@ public class Jena implements BenchmarkEngine {
     }
 
     @Override
-    public void prepare(TestCaseConfiguration testCase) {
+    public void prepare(String testDataPath, TestCaseConfiguration testCase) {
         String absoluteDataPath =
-            BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".jena", false);
-        if (StringUtils.isNotEmpty(absoluteDataPath)) {
+            BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER, testCase, ".jena");
+        if (BenchmarkUtils.fileExists(absoluteDataPath)) {
             try {
                 log.info("Loading data from path: {}", absoluteDataPath);
                 FileReader dataInput = new FileReader(absoluteDataPath);
@@ -63,8 +75,7 @@ public class Jena implements BenchmarkEngine {
                 bufRead.close();
 
                 String absoluteRulePath =
-                    BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".rules",
-                                               false);
+                    BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER, testCase, ".rules");
                 log.info("Loading rules from path: {}", absoluteRulePath);
                 List<Rule> rules =
                     Rule.rulesFromURL("file:" + absoluteRulePath);

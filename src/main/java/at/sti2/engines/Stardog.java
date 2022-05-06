@@ -9,23 +9,26 @@ import com.complexible.stardog.api.admin.AdminConnection;
 import com.complexible.stardog.api.admin.AdminConnectionConfiguration;
 import com.stardog.stark.Statement;
 import com.stardog.stark.Values;
+import com.stardog.stark.io.RDFFormats;
 import com.stardog.stark.query.SelectQueryResult;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 public class Stardog implements BenchmarkEngine {
 
-    private static final String ENGINE_NAME = "Stardog";
+    private static final String ENGINE_IDENTIFIER = "Stardog";
 
     private static final String DATABASE_IDENTIFIER = "OpenRuleBenchDatabase";
     private static final String SERVER_URL = "http://localhost:5820";
@@ -37,10 +40,12 @@ public class Stardog implements BenchmarkEngine {
     private AdminConnection adminConnection;
     private Connection databaseConnection;
 
+    private String engineName;
+
     public Stardog() {
         log.info("Setting up docker container for stardog evaluation.");
         try {
-            BenchmarkUtils.startContainerForEngine(ENGINE_NAME);
+            BenchmarkUtils.startContainerForEngine(ENGINE_IDENTIFIER);
             log.info(
                 "Started docker container, waiting for 30 seconds to make sure it is started...");
             Thread.sleep(30 * 1000);
@@ -51,8 +56,18 @@ public class Stardog implements BenchmarkEngine {
     }
 
     @Override
+    public String getEngineIdentifier() {
+        return ENGINE_IDENTIFIER;
+    }
+
+    @Override
     public String getEngineName() {
-        return ENGINE_NAME;
+        return engineName;
+    }
+
+    @Override
+    public void setEngineName(String engineName) {
+        this.engineName = engineName;
     }
 
     @Override
@@ -60,11 +75,11 @@ public class Stardog implements BenchmarkEngine {
     }
 
     @Override
-    public void prepare(TestCaseConfiguration testCase) {
+    public void prepare(String testDataPath, TestCaseConfiguration testCase) {
         String absoluteDataPath =
-            BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".stardog",
-                                       false);
-        if (StringUtils.isNotEmpty(absoluteDataPath)) {
+            BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER,
+                                       testCase, ".nt");
+        if (BenchmarkUtils.fileExists(absoluteDataPath)) {
             try {
                 adminConnection =
                     AdminConnectionConfiguration.toServer(SERVER_URL)
@@ -78,19 +93,28 @@ public class Stardog implements BenchmarkEngine {
                     ConnectionConfiguration.to(DATABASE_IDENTIFIER)
                                            .server(SERVER_URL)
                                            .credentials(USER, PASSWORD)
+                                           .reasoning(true)
                                            .connect();
 
                 databaseConnection.begin();
                 List<Statement> statements =
                     prepareStatements(absoluteDataPath);
-                databaseConnection.add().graph(statements);
+
+                //statements.forEach(
+                //    statement -> databaseConnection.add().statement(statement));
+
+                databaseConnection.add().io().format(RDFFormats.NTRIPLES)
+                                  .stream(
+                                      new FileInputStream(absoluteDataPath));
 
                 String absoluteRulePath =
-                    BenchmarkUtils.getFilePath(ENGINE_NAME, testCase, ".ttl",
-                                               false);
+                    BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER,
+                                               testCase, ".ttl");
                 log.info("Loading rule from path: {}", absoluteRulePath);
                 databaseConnection.add().io()
-                                  .file(new File(absoluteRulePath).toPath());
+                                  .format(RDFFormats.TURTLE)
+                                  .stream(
+                                      new FileInputStream(absoluteRulePath));
                 databaseConnection.commit();
             } catch (Exception e) {
                 log.error("Error while preparing stardog!", e);
@@ -103,7 +127,7 @@ public class Stardog implements BenchmarkEngine {
         SelectQuery aQuery =
             databaseConnection
                 .select("select * where {" + query + "}")
-                .reasoning(true).timeout(30 * 60 * 1000);
+                .timeout(30 * 60 * 1000);
         SelectQueryResult result = aQuery.execute();
         int numberOfResults = (int) result.stream().count();
         result.close();
@@ -118,8 +142,8 @@ public class Stardog implements BenchmarkEngine {
     @Override
     public void shutDown() {
         try {
-            BenchmarkUtils.stopContainerForEngine(ENGINE_NAME);
-        } catch (IOException e) {
+            BenchmarkUtils.stopContainers();
+        } catch (IOException | URISyntaxException e) {
             log.error("Error stopping docker container for stardog!", e);
         }
     }

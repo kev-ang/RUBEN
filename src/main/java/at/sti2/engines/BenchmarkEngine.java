@@ -6,11 +6,15 @@ import java.util.Map;
 
 public interface BenchmarkEngine {
 
+    String getEngineIdentifier();
+
     String getEngineName();
+
+    void setEngineName(String engineName);
 
     void setSettings(Map<String, Object> settings);
 
-    void prepare(TestCaseConfiguration testCase);
+    void prepare(String testDataPath, TestCaseConfiguration testCase);
 
     int executeQuery(String query) throws Exception;
 

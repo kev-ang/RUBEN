@@ -1,0 +1,287 @@
+{
+  "name": "OpenRuleBench",
+  "testDataPath": "<PATH TO TEST DATA FOLDER>",
+  "engines": [
+    {
+      "name": "Drools",
+      "classpath": "at.sti2.engines.Drools"
+    },
+    {
+      "name": "Jena",
+      "classpath": "at.sti2.engines.Jena"
+    },
+    {
+      "name": "SemReasoner_Persistent",
+      "classpath": "at.sti2.engines.SemReasoner",
+      "settings": {
+        "storage_mode": "PERSISTENT",
+        "edb_folder": "SemReasonerData/edb/",
+        "temp_folder": "SemReasonerData/temp/"
+      }
+    },
+    {
+      "name": "SemReasoner_Persistent_TopDown",
+      "classpath": "at.sti2.engines.SemReasoner",
+      "settings": {
+        "storage_mode": "PERSISTENT",
+        "edb_folder": "SemReasonerData/edb/",
+        "temp_folder": "SemReasonerData/temp/",
+        "top_down_reasoning": true
+      }
+    },
+    {
+      "name": "SemReasoner_Memory",
+      "classpath": "at.sti2.engines.SemReasoner",
+      "settings": {
+        "storage_mode": "MEMORY",
+        "edb_folder": "SemReasonerData/edb/",
+        "temp_folder": "SemReasonerData/temp/"
+      }
+    },
+    {
+      "name": "SemReasoner_Memory_TopDown",
+      "classpath": "at.sti2.engines.SemReasoner",
+      "settings": {
+        "storage_mode": "MEMORY",
+        "edb_folder": "SemReasonerData/edb/",
+        "temp_folder": "SemReasonerData/temp/",
+        "top_down_reasoning": true
+      }
+    },
+    {
+      "name": "SemReasoner_Mixed",
+      "classpath": "at.sti2.engines.SemReasoner",
+      "settings": {
+        "storage_mode": "MIXED",
+        "edb_folder": "SemReasonerData/edb/",
+        "temp_folder": "SemReasonerData/temp/"
+      }
+    },
+    {
+      "name": "SemReasoner_Mixed_TopDown",
+      "classpath": "at.sti2.engines.SemReasoner",
+      "settings": {
+        "storage_mode": "MIXED",
+        "edb_folder": "SemReasonerData/edb/",
+        "temp_folder": "SemReasonerData/temp/",
+        "top_down_reasoning": true
+      }
+    },
+    {
+      "name": "Stardog",
+      "classpath": "at.sti2.engines.Stardog"
+    }
+  ],
+  "test_cases": [
+    {
+      "test_case_identifier": "d1000_relsize50000_cyc",
+      "test_name": "join1",
+      "category": "large_joins"
+    },
+    {
+      "test_case_identifier": "d1000_relsize250000_cyc",
+      "test_name": "join1",
+      "category": "large_joins"
+    },
+    {
+      "test_case_identifier": "join2",
+      "test_name": "join2",
+      "category": "large_joins"
+    },
+    {
+      "test_case_identifier": "lubm10",
+      "test_name": "lubm_derived",
+      "category": "large_joins"
+    },
+    {
+      "test_case_identifier": "lubm50",
+      "test_name": "lubm_derived",
+      "category": "large_joins"
+    },
+    {
+      "test_case_identifier": "mondial",
+      "test_name": "mondial",
+      "category": "large_joins"
+    },
+    {
+      "test_case_identifier": "dblp",
+      "test_name": "dblp",
+      "category": "large_joins"
+    },
+    {
+      "test_case_identifier": "d1000_parsize50000_cyc",
+      "test_name": "transitive_closure",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "d1000_parsize50000_no_cyc",
+      "test_name": "transitive_closure",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "d1000_parsize500000_cyc",
+      "test_name": "transitive_closure",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "d1000_parsize500000_no_cyc",
+      "test_name": "transitive_closure",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "d500_parsize10000_sibsize2000_cyc",
+      "test_name": "same_generation",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "d500_parsize10000_sibsize2000_no_cyc",
+      "test_name": "same_generation",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "d500_parsize20000_sibsize4000_cyc",
+      "test_name": "same_generation",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "d500_parsize20000_sibsize4000_no_cyc",
+      "test_name": "same_generation",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "AdjectiveClusters",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "All_AdjectiveClusters",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "All_Holonyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "All_Hypernyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "All_Hyponyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "All_Meronyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "All_Troponyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "Antonyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "Glosses",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "Holonyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "Hypernyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "Hyponyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "Meronyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "SameSynset",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "Troponyms",
+      "test_name": "wordnet",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "wine",
+      "test_name": "wine",
+      "category": "datalog_recursion"
+    },
+    {
+      "test_case_identifier": "d500_parsize5000_sibsize1000",
+      "test_name": "same_generation",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "d500_parsize5000_sibsize1000",
+      "test_name": "same_generation",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "d500_parsize10000_sibsize2000",
+      "test_name": "same_generation",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "d500_parsize20000_sibsize4000",
+      "test_name": "same_generation",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "d1000_parsize5000_sibsize1000",
+      "test_name": "same_generation",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "d1000_parsize10000_sibsize2000",
+      "test_name": "same_generation",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "upper50000",
+      "test_name": "win_non_win",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "upper100000",
+      "test_name": "win_non_win",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "upper250000",
+      "test_name": "win_non_win",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "upper500000",
+      "test_name": "win_non_win",
+      "category": "stratified_negation"
+    },
+    {
+      "test_case_identifier": "upper1000000",
+      "test_name": "win_non_win",
+      "category": "stratified_negation"
+    }
+  ]
+}
