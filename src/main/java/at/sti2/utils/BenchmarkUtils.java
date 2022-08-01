@@ -1,13 +1,11 @@
 package at.sti2.utils;
 
-import at.sti2.configuration.ReasoningEngineConfiguration;
+import at.sti2.configuration.RuleEngineConfiguration;
 import at.sti2.configuration.TestCaseConfiguration;
 import at.sti2.engines.RuleEngine;
-import at.sti2.model.benchmark_result.BenchmarkResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import lombok.extern.slf4j.Slf4j;
@@ -37,31 +35,22 @@ public class BenchmarkUtils {
     }
 
     public static RuleEngine loadBenchmarkEngine(
-        ReasoningEngineConfiguration reasoningEngineConfiguration) {
+        RuleEngineConfiguration ruleEngineConfiguration) {
         try {
             RuleEngine ruleEngine =
                 (RuleEngine)
-                    Class.forName(reasoningEngineConfiguration.getClasspath())
+                    Class.forName(ruleEngineConfiguration.getClasspath())
                          .getDeclaredConstructor()
                          .newInstance();
             ruleEngine.setEngineName(
-                reasoningEngineConfiguration.getName());
+                ruleEngineConfiguration.getName());
             ruleEngine.setSettings(
-                reasoningEngineConfiguration.getSettings());
+                ruleEngineConfiguration.getSettings());
             return ruleEngine;
         } catch (Exception e) {
             log.error("Error loading benchmark engine class!", e);
             throw new IllegalStateException(
                 "Can not load benchmarking engine!");
-        }
-    }
-
-    public static void writeResults(BenchmarkResult benchmarkResult) {
-        try {
-            om.writerWithDefaultPrettyPrinter()
-              .writeValue(new File("Results.json"), benchmarkResult);
-        } catch (IOException e) {
-            log.error("Error while writing benchmark results to file!", e);
         }
     }
 
