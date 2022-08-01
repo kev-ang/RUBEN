@@ -9,13 +9,14 @@ import lombok.Data;
 @Data
 public class BenchmarkResult {
 
-    private Map<String, BenchmarkEngineResult> benchmarkEngineResults;
+    private Map<String, RuleEngineResult> benchmarkEngineResults;
 
     public BenchmarkResult() {
         this(new HashMap<>());
     }
 
-    public void addBenchmarkEngineResult(BenchmarkEngineResult benchmarkEngineResult){
-        benchmarkEngineResults.put(benchmarkEngineResult.getName(), benchmarkEngineResult);
+    public void addBenchmarkEngineResult(RuleEngineResult ruleEngineResult) {
+        benchmarkEngineResults.put(ruleEngineResult.getName(),
+                                   ruleEngineResult);
     }
 }

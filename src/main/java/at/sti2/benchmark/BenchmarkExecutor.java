@@ -2,9 +2,9 @@ package at.sti2.benchmark;
 
 import at.sti2.configuration.TestCaseConfiguration;
 import at.sti2.engines.RuleEngine;
-import at.sti2.model.benchmark_result.BenchmarkEngineResult;
-import at.sti2.model.benchmark_result.BenchmarkQueryResult;
-import at.sti2.model.benchmark_result.BenchmarkTestCaseResult;
+import at.sti2.model.benchmark_result.QueryResult;
+import at.sti2.model.benchmark_result.RuleEngineResult;
+import at.sti2.model.benchmark_result.TestCaseResult;
 import at.sti2.model.query.Query;
 import at.sti2.model.query.QueryContainer;
 import at.sti2.utils.BenchmarkUtils;
@@ -19,39 +19,57 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Executes all test cases for the given rule engine. Handles loading the test
+ * data, executing the test cases, and shutting down the engine in the end.
+ *
+ * @author kevin.angele@sti2.at
+ */
 @Slf4j
 public class BenchmarkExecutor {
 
-    public static BenchmarkEngineResult execute(String testDataPath,
-                                                RuleEngine engine,
-                                                List<TestCaseConfiguration> testCases) {
-        BenchmarkEngineResult benchmarkEngineResult =
-            new BenchmarkEngineResult(engine.getEngineName());
+    private static ExecutorService executor =
+        Executors.newSingleThreadExecutor();
+
+    /**
+     * Execute all test cases for the given rule engine.
+     *
+     * @param testDataPath directory containing all the test data
+     * @param engine       current engine to be evaluated
+     * @param testCases    set of test cases
+     * @return result for the given rule engine
+     */
+    public static RuleEngineResult execute(String testDataPath,
+                                           RuleEngine engine,
+                                           List<TestCaseConfiguration> testCases) {
+        RuleEngineResult ruleEngineResult =
+            new RuleEngineResult(engine.getEngineName());
 
         log.info("Starting evaluation using benchmarking engine \"{}\" ...",
                  engine.getEngineName());
 
         for (TestCaseConfiguration testCase : testCases) {
-            BenchmarkTestCaseResult benchmarkTestCaseResult =
-                new BenchmarkTestCaseResult(testCase);
-            benchmarkEngineResult.addTestCaseResult(benchmarkTestCaseResult);
+            TestCaseResult testCaseResult =
+                new TestCaseResult(testCase);
+            ruleEngineResult.addTestCaseResult(testCaseResult);
 
             log.info("... running test case {}", testCase.getName());
             engine.prepare(testDataPath, testCase);
-            Map<String, BenchmarkQueryResult> result =
+            Map<String, QueryResult> result =
                 executeTestCase(testDataPath, engine, testCase);
-            benchmarkTestCaseResult.getQueryResults().putAll(result);
+            testCaseResult.getQueryResults().putAll(result);
             engine.cleanUp();
         }
         engine.shutDown();
-        return benchmarkEngineResult;
+        return ruleEngineResult;
     }
 
-    private static Map<String, BenchmarkQueryResult> executeTestCase(
+    private static Map<String, QueryResult> executeTestCase(
         String testDataPath,
         RuleEngine engine, TestCaseConfiguration testCase) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Map<String, BenchmarkQueryResult> testCaseResults = new HashMap<>();
+
+        Map<String, QueryResult> testCaseResults = new HashMap<>();
+
         String queryFileClassPath =
             BenchmarkUtils.getFilePath(testDataPath,
                                        engine.getEngineIdentifier(),
@@ -63,18 +81,17 @@ public class BenchmarkExecutor {
             executeTestCaseQueries(engine, executor, testCaseResults,
                                    queryContainer);
         }
-        executor.shutdownNow();
         return testCaseResults;
     }
 
     private static void executeTestCaseQueries(RuleEngine engine,
                                                ExecutorService executor,
-                                               Map<String, BenchmarkQueryResult> testCaseResults,
+                                               Map<String, QueryResult> testCaseResults,
                                                QueryContainer queryContainer) {
         for (Query query : queryContainer.getQueries()) {
             log.info("Evaluating query: {}", query.getQuery());
-            BenchmarkQueryResult queryResultObject =
-                new BenchmarkQueryResult(query.getName());
+            QueryResult queryResultObject =
+                new QueryResult(query.getName());
             Future<Integer> resultFuture = null;
             for (var i = 0; i < 2; i++) {
                 long start = System.currentTimeMillis();
@@ -100,9 +117,10 @@ public class BenchmarkExecutor {
                     log.error("Error evaluating query {} with {}!",
                               query.getName(), engine.getEngineName(), e);
                     break;
-                }catch(Error e){
+                } catch (Error e) {
                     queryResultObject.setException(e.getMessage());
-                    log.error("Error evaluating query {} with {}", query.getName(), engine.getEngineName(), e);
+                    log.error("Error evaluating query {} with {}",
+                              query.getName(), engine.getEngineName(), e);
                 } finally {
                     long end = System.currentTimeMillis();
                     queryResultObject.setTimeSpent((end - start));

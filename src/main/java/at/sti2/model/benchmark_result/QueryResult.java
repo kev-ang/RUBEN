@@ -5,14 +5,14 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class BenchmarkQueryResult {
+public class QueryResult {
 
     private String query;
     private long timeSpent;
     private int numOfResults;
     private String exception;
 
-    public BenchmarkQueryResult(String query){
+    public QueryResult(String query) {
         this.query = query;
     }
 

@@ -5,8 +5,8 @@ import at.sti2.configuration.BenchmarkConfiguration;
 import at.sti2.configuration.RuleEngineConfiguration;
 import at.sti2.configuration.TestCaseConfiguration;
 import at.sti2.engines.RuleEngine;
-import at.sti2.model.benchmark_result.BenchmarkEngineResult;
 import at.sti2.model.benchmark_result.BenchmarkResult;
+import at.sti2.model.benchmark_result.RuleEngineResult;
 import at.sti2.utils.BenchmarkUtils;
 import at.sti2.utils.result_writer.JsonWriter;
 import at.sti2.utils.result_writer.ResultWriter;
@@ -54,12 +54,12 @@ public class Ruben {
         RuleEngine ruleEngine =
             BenchmarkUtils.loadBenchmarkEngine(benchmarkEngineConfig);
 
-        BenchmarkEngineResult benchmarkEngineResult =
+        RuleEngineResult ruleEngineResult =
             BenchmarkExecutor.execute(
                 testDataPath,
                 ruleEngine,
                 testCases);
-        benchmarkResult.addBenchmarkEngineResult(benchmarkEngineResult);
+        benchmarkResult.addBenchmarkEngineResult(ruleEngineResult);
     }
 
     public static void main(String[] args) {

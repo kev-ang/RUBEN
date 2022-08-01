@@ -11,11 +11,22 @@ import java.nio.charset.Charset;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 
+/**
+ * Utils required for loading files.
+ */
 @Slf4j
 public class BenchmarkUtils {
 
     private static final ObjectMapper om = new ObjectMapper();
 
+    /**
+     * Load a file and parse to a given class.
+     *
+     * @param path         of the file to be loaded.
+     * @param parseToClass class the file should be parsed to
+     * @param <T>          type of the return value
+     * @return parsed data
+     */
     public static <T> T load(String path, Class<T> parseToClass) {
         if (fileExists(path)) {
             try {
@@ -34,6 +45,13 @@ public class BenchmarkUtils {
         return null;
     }
 
+    /**
+     * Initialize class for rule engine using reflection.
+     *
+     * @param ruleEngineConfiguration configuration of the rule engine to be
+     *                                loaded.
+     * @return instance of a rule engine.
+     */
     public static RuleEngine loadBenchmarkEngine(
         RuleEngineConfiguration ruleEngineConfiguration) {
         try {
@@ -54,6 +72,15 @@ public class BenchmarkUtils {
         }
     }
 
+    /**
+     * Get path of a file based on the provided information.
+     *
+     * @param testDataPath root directory containing the test data
+     * @param engineName   name of the engine the file should be fetched for
+     * @param testCase     current test case
+     * @param fileEnding   required file ending
+     * @return file path
+     */
     public static String getFilePath(String testDataPath,
                                      String engineName,
                                      TestCaseConfiguration testCase,
@@ -68,6 +95,12 @@ public class BenchmarkUtils {
                 testCase.getTestCaseIdentifier() + fileEnding);
     }
 
+    /**
+     * Check if a file for the given file path exists.
+     *
+     * @param filePath to be checked
+     * @return true if file exists, false otherwise
+     */
     public static boolean fileExists(String filePath) {
         return new File(filePath).exists();
     }

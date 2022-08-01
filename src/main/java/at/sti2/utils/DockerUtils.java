@@ -7,9 +7,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Utils for handling docker containers.
+ *
+ * @author kevin.angele@sti2.at
+ */
 @Slf4j
 public class DockerUtils {
 
+    /**
+     * Start container for a given engineName. The engine must be specified in
+     * the `docker-compose.yml` file.
+     *
+     * @param engineName to be started
+     * @throws IOException
+     */
     public static void startContainerForEngine(String engineName)
         throws IOException {
         String dockerComposeFilePath = new File(".").getCanonicalPath();
@@ -23,6 +35,11 @@ public class DockerUtils {
         printProcessInputStream(p.getInputStream());
     }
 
+    /**
+     * Stop all docker containers.
+     *
+     * @throws IOException
+     */
     public static void stopContainers()
         throws IOException {
         String dockerComposeFilePath = new File(".").getCanonicalPath();
