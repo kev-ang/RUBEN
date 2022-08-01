@@ -1,6 +1,6 @@
 package at.sti2.engines;
 
-import at.sti2.benchmark.BenchmarkUtils;
+import at.sti2.utils.BenchmarkUtils;
 import at.sti2.configuration.TestCaseConfiguration;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -20,7 +20,7 @@ import org.kie.api.runtime.rule.QueryResults;
 import org.kie.internal.io.ResourceFactory;
 
 @Slf4j
-public class Drools implements BenchmarkEngine {
+public class Drools implements RuleEngine {
 
 
     private static final String ENGINE_IDENTIFIER = "Drools";

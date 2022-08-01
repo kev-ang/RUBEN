@@ -1,0 +1,23 @@
+@startuml
+'https://plantuml.com/component-diagram
+
+package "Configuration" {
+    [BenchmarkConfiguration] .up.> [ReasoningEngineConfiguration] : use
+    [BenchmarkConfiguration] .up.> [TestCaseConfiguration] : use
+}
+
+package "BenchmarkExecution" {
+    [Ruben] .up.> [BenchmarkConfiguration] : use
+    [Ruben] --> [BenchmarkExecutor]
+    [BenchmarkExecutor] --> () "RuleEngine"
+}
+
+package "RuleEngines"{
+    [Drools] -up-> () "RuleEngine" : implements
+    [Jena] -up-> () "RuleEngine" : implements
+    [SemReasoner] -up-> () "RuleEngine" : implements
+    [Stardog] -up-> () "RuleEngine" : implements
+}
+
+
+@enduml

@@ -1,6 +1,6 @@
 package at.sti2.engines;
 
-import at.sti2.benchmark.BenchmarkUtils;
+import at.sti2.utils.BenchmarkUtils;
 import at.sti2.configuration.TestCaseConfiguration;
 import com.semedy.reasoner.api.core.Configuration;
 import com.semedy.reasoner.api.core.Configuration.StorageType;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 
 @Slf4j
-public class SemReasoner implements BenchmarkEngine {
+public class SemReasoner implements RuleEngine {
 
     private static final String ENGINE_IDENTIFIER = "SemReasoner";
 

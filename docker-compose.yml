@@ -9,4 +9,4 @@ services:
     volumes:
       - /Users/Kevin/Desktop/StardogHome/:/var/opt/stardog
     environment:
-      STARDOG_SERVER_JAVA_ARGS: '-Xmx32g -Xms32g -XX:MaxDirectMemorySize=32g'
+      STARDOG_SERVER_JAVA_ARGS: '-Xmx5g -Xms5g -XX:MaxDirectMemorySize=5g'

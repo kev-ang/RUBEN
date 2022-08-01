@@ -1,6 +1,6 @@
 {
   "name": "OpenRuleBench",
-  "testDataPath": "<PATH TO TEST DATA FOLDER>",
+  "testDataPath": "/Volumes/T7/RuleEngineBenchmark/test_data",
   "engines": [
     {
       "name": "Drools",
@@ -72,7 +72,7 @@
       "classpath": "at.sti2.engines.Stardog"
     }
   ],
-  "test_cases": [
+  "testCases": [
     {
       "test_case_identifier": "d1000_relsize50000_cyc",
       "test_name": "join1",
@@ -229,59 +229,19 @@
       "category": "datalog_recursion"
     },
     {
-      "test_case_identifier": "d500_parsize5000_sibsize1000",
+      "test_case_identifier": "SameGeneration_6000",
       "test_name": "same_generation",
-      "category": "stratified_negation"
+      "category": "negation"
     },
     {
-      "test_case_identifier": "d500_parsize5000_sibsize1000",
+      "test_case_identifier": "SameGeneration_12000",
       "test_name": "same_generation",
-      "category": "stratified_negation"
+      "category": "negation"
     },
     {
-      "test_case_identifier": "d500_parsize10000_sibsize2000",
+      "test_case_identifier": "SameGeneration_24000",
       "test_name": "same_generation",
-      "category": "stratified_negation"
-    },
-    {
-      "test_case_identifier": "d500_parsize20000_sibsize4000",
-      "test_name": "same_generation",
-      "category": "stratified_negation"
-    },
-    {
-      "test_case_identifier": "d1000_parsize5000_sibsize1000",
-      "test_name": "same_generation",
-      "category": "stratified_negation"
-    },
-    {
-      "test_case_identifier": "d1000_parsize10000_sibsize2000",
-      "test_name": "same_generation",
-      "category": "stratified_negation"
-    },
-    {
-      "test_case_identifier": "upper50000",
-      "test_name": "win_non_win",
-      "category": "stratified_negation"
-    },
-    {
-      "test_case_identifier": "upper100000",
-      "test_name": "win_non_win",
-      "category": "stratified_negation"
-    },
-    {
-      "test_case_identifier": "upper250000",
-      "test_name": "win_non_win",
-      "category": "stratified_negation"
-    },
-    {
-      "test_case_identifier": "upper500000",
-      "test_name": "win_non_win",
-      "category": "stratified_negation"
-    },
-    {
-      "test_case_identifier": "upper1000000",
-      "test_name": "win_non_win",
-      "category": "stratified_negation"
+      "category": "negation"
     }
   ]
 }

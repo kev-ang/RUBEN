@@ -20,7 +20,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>at.sti2.RuleBenchmark</mainClass>
+              <mainClass>at.sti2.Ruben</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

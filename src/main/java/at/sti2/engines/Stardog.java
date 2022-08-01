@@ -1,7 +1,8 @@
 package at.sti2.engines;
 
-import at.sti2.benchmark.BenchmarkUtils;
 import at.sti2.configuration.TestCaseConfiguration;
+import at.sti2.utils.BenchmarkUtils;
+import at.sti2.utils.DockerUtils;
 import com.complexible.stardog.api.Connection;
 import com.complexible.stardog.api.ConnectionConfiguration;
 import com.complexible.stardog.api.SelectQuery;
@@ -15,7 +16,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class Stardog implements BenchmarkEngine {
+public class Stardog implements RuleEngine {
 
     private static final String ENGINE_IDENTIFIER = "Stardog";
 
@@ -34,7 +35,7 @@ public class Stardog implements BenchmarkEngine {
     public Stardog() {
         log.info("Setting up docker container for stardog evaluation.");
         try {
-            BenchmarkUtils.startContainerForEngine(ENGINE_IDENTIFIER);
+            DockerUtils.startContainerForEngine(ENGINE_IDENTIFIER);
             log.info(
                 "Started docker container, waiting for 30 seconds to make sure it is started...");
             Thread.sleep(30 * 1000);
@@ -114,6 +115,7 @@ public class Stardog implements BenchmarkEngine {
             databaseConnection
                 .select("select * where {" + query + "}")
                 .timeout(30 * 60 * 1000);
+        aQuery.limit(100000);
         SelectQueryResult result = aQuery.execute();
         int numberOfResults = (int) result.stream().count();
         result.close();
@@ -128,7 +130,7 @@ public class Stardog implements BenchmarkEngine {
     @Override
     public void shutDown() {
         try {
-            BenchmarkUtils.stopContainers();
+            DockerUtils.stopContainers();
         } catch (IOException e) {
             log.error("Error stopping docker container for stardog!", e);
         }

@@ -1,6 +1,6 @@
 package at.sti2.engines;
 
-import at.sti2.benchmark.BenchmarkUtils;
+import at.sti2.utils.BenchmarkUtils;
 import at.sti2.configuration.TestCaseConfiguration;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -22,7 +22,7 @@ import org.apache.jena.reasoner.rulesys.Rule;
 import org.codehaus.plexus.util.StringUtils;
 
 @Slf4j
-public class Jena implements BenchmarkEngine {
+public class Jena implements RuleEngine {
 
     private static final String ENGINE_IDENTIFIER = "Jena";
 

@@ -1,16 +1,16 @@
 package at.sti2;
 
-import at.sti2.benchmark.BenchmarkTest;
-import at.sti2.benchmark.BenchmarkUtils;
+import at.sti2.benchmark.BenchmarkExecutor;
+import at.sti2.utils.BenchmarkUtils;
 import at.sti2.configuration.BenchmarkConfiguration;
 import at.sti2.configuration.ReasoningEngineConfiguration;
-import at.sti2.engines.BenchmarkEngine;
+import at.sti2.engines.RuleEngine;
 import at.sti2.model.benchmark_result.BenchmarkEngineResult;
 import at.sti2.model.benchmark_result.BenchmarkResult;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class RuleBenchmark {
+public class Ruben {
 
     public void runEvaluation(String pathToConfiguration) {
         BenchmarkResult benchmarkResult = new BenchmarkResult();
@@ -18,21 +18,21 @@ public class RuleBenchmark {
             BenchmarkUtils.load(pathToConfiguration,
                                 BenchmarkConfiguration.class);
 
-        for (ReasoningEngineConfiguration benchmarkEngineConfig : benchmarkConfiguration.getBenchmarkEngines()) {
-            BenchmarkEngine benchmarkEngine =
+        for (ReasoningEngineConfiguration benchmarkEngineConfig : benchmarkConfiguration.getEngines()) {
+            RuleEngine ruleEngine =
                 BenchmarkUtils.loadBenchmarkEngine(benchmarkEngineConfig);
 
             BenchmarkEngineResult benchmarkEngineResult =
-                BenchmarkTest.execute(benchmarkConfiguration.getTestDataPath(),
-                                      benchmarkEngine,
-                                      benchmarkConfiguration.getTestCases());
+                BenchmarkExecutor.execute(benchmarkConfiguration.getTestDataPath(),
+                                          ruleEngine,
+                                          benchmarkConfiguration.getTestCases());
             benchmarkResult.addBenchmarkEngineResult(benchmarkEngineResult);
         }
         BenchmarkUtils.writeResults(benchmarkResult);
     }
 
     public static void main(String[] args) {
-        RuleBenchmark benchmark = new RuleBenchmark();
+        Ruben benchmark = new Ruben();
         benchmark.runEvaluation(args[0]);
         log.info("DONE!");
     }

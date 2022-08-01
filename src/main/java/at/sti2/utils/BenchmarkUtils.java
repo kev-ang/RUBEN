@@ -1,16 +1,14 @@
-package at.sti2.benchmark;
+package at.sti2.utils;
 
 import at.sti2.configuration.ReasoningEngineConfiguration;
 import at.sti2.configuration.TestCaseConfiguration;
-import at.sti2.engines.BenchmarkEngine;
+import at.sti2.engines.RuleEngine;
 import at.sti2.model.benchmark_result.BenchmarkResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -38,19 +36,19 @@ public class BenchmarkUtils {
         return null;
     }
 
-    public static BenchmarkEngine loadBenchmarkEngine(
+    public static RuleEngine loadBenchmarkEngine(
         ReasoningEngineConfiguration reasoningEngineConfiguration) {
         try {
-            BenchmarkEngine benchmarkEngine =
-                (BenchmarkEngine)
+            RuleEngine ruleEngine =
+                (RuleEngine)
                     Class.forName(reasoningEngineConfiguration.getClasspath())
                          .getDeclaredConstructor()
                          .newInstance();
-            benchmarkEngine.setEngineName(
+            ruleEngine.setEngineName(
                 reasoningEngineConfiguration.getName());
-            benchmarkEngine.setSettings(
+            ruleEngine.setSettings(
                 reasoningEngineConfiguration.getSettings());
-            return benchmarkEngine;
+            return ruleEngine;
         } catch (Exception e) {
             log.error("Error loading benchmark engine class!", e);
             throw new IllegalStateException(
@@ -83,40 +81,5 @@ public class BenchmarkUtils {
 
     public static boolean fileExists(String filePath) {
         return new File(filePath).exists();
-    }
-
-    public static void startContainerForEngine(String engineName)
-        throws IOException {
-        String dockerComposeFilePath = new File(".").getCanonicalPath();
-        String dockerComposeCommand = "docker-compose -f " +
-                                      dockerComposeFilePath +
-                                      "/docker-compose.yml" +
-                                      " up -d " +
-                                      engineName.toLowerCase();
-        log.info("Executing: {}", dockerComposeCommand);
-        Process p = Runtime.getRuntime().exec(dockerComposeCommand);
-        printProcessInputStream(p.getInputStream());
-    }
-
-    public static void stopContainers()
-        throws IOException {
-        String dockerComposeFilePath = new File(".").getCanonicalPath();
-        String dockerComposeCommand = "docker-compose -f " +
-                                      dockerComposeFilePath +
-                                      "/docker-compose.yml" +
-                                      " down -v";
-        log.info("Executing: {}", dockerComposeCommand);
-        Process p = Runtime.getRuntime().exec(dockerComposeCommand);
-        printProcessInputStream(p.getInputStream());
-    }
-
-    private static void printProcessInputStream(InputStream inputStream)
-        throws IOException {
-        String line;
-        InputStreamReader isr = new InputStreamReader(inputStream);
-        BufferedReader rdr = new BufferedReader(isr);
-        while ((line = rdr.readLine()) != null) {
-            log.info(line);
-        }
     }
 }

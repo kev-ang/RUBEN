@@ -1,12 +1,13 @@
 package at.sti2.benchmark;
 
 import at.sti2.configuration.TestCaseConfiguration;
-import at.sti2.engines.BenchmarkEngine;
+import at.sti2.engines.RuleEngine;
 import at.sti2.model.benchmark_result.BenchmarkEngineResult;
 import at.sti2.model.benchmark_result.BenchmarkQueryResult;
 import at.sti2.model.benchmark_result.BenchmarkTestCaseResult;
 import at.sti2.model.query.Query;
 import at.sti2.model.query.QueryContainer;
+import at.sti2.utils.BenchmarkUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +20,10 @@ import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class BenchmarkTest {
+public class BenchmarkExecutor {
 
     public static BenchmarkEngineResult execute(String testDataPath,
-                                                BenchmarkEngine engine,
+                                                RuleEngine engine,
                                                 List<TestCaseConfiguration> testCases) {
         BenchmarkEngineResult benchmarkEngineResult =
             new BenchmarkEngineResult(engine.getEngineName());
@@ -48,7 +49,7 @@ public abstract class BenchmarkTest {
 
     private static Map<String, BenchmarkQueryResult> executeTestCase(
         String testDataPath,
-        BenchmarkEngine engine, TestCaseConfiguration testCase) {
+        RuleEngine engine, TestCaseConfiguration testCase) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Map<String, BenchmarkQueryResult> testCaseResults = new HashMap<>();
         String queryFileClassPath =
@@ -66,7 +67,7 @@ public abstract class BenchmarkTest {
         return testCaseResults;
     }
 
-    private static void executeTestCaseQueries(BenchmarkEngine engine,
+    private static void executeTestCaseQueries(RuleEngine engine,
                                                ExecutorService executor,
                                                Map<String, BenchmarkQueryResult> testCaseResults,
                                                QueryContainer queryContainer) {
@@ -96,9 +97,12 @@ public abstract class BenchmarkTest {
                     break;
                 } catch (Exception e) {
                     queryResultObject.setException(e.getMessage());
-                    log.error("Error evaluating query {} with SemReasoner!",
-                              query.getName(), e);
+                    log.error("Error evaluating query {} with {}!",
+                              query.getName(), engine.getEngineName(), e);
                     break;
+                }catch(Error e){
+                    queryResultObject.setException(e.getMessage());
+                    log.error("Error evaluating query {} with {}", query.getName(), engine.getEngineName(), e);
                 } finally {
                     long end = System.currentTimeMillis();
                     queryResultObject.setTimeSpent((end - start));

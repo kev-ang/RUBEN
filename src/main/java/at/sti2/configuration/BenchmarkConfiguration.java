@@ -7,16 +7,12 @@ import lombok.Data;
 @Data
 public class BenchmarkConfiguration {
 
-    @JsonProperty("name")
     private String name;
 
-    @JsonProperty("testDataPath")
     private String testDataPath;
 
-    @JsonProperty("engines")
-    private List<ReasoningEngineConfiguration> benchmarkEngines;
+    private List<ReasoningEngineConfiguration> engines;
 
-    @JsonProperty("test_cases")
     private List<TestCaseConfiguration> testCases;
 
 }

@@ -35,7 +35,7 @@ relevant docker containers and starting them, as well as shutting them down is
 handled by the framework itself. You can easily add new docker containers by
 modifying the `docker-compose.yml` in `src/main/resources`. For starting a
 docker container within the preparation phase of a reasoning engines,
-use `at.sti2.at.sti2.benchmark.BenchmarkUtils.startContainerForEngine(String name)`
+use `at.sti2.at.sti2.utils.BenchmarkUtils.startContainerForEngine(String name)`
 .
 
 ## Running the Evaluation
@@ -72,7 +72,7 @@ runnable JAR.
        argument `-Xmx32g` (if you want to use 32 gigabytes)
     2. Set the path to the configuration file as program argument (e.g.,
        ./src/main/resources/Benchmark_Configuration.json)
-5. Run the main-method within `at.sti2.RuleBenchmark`
+5. Run the main-method within `at.sti2.Ruben`
 6. When the evaluation is done, the console will show "DONE!"
 7. On the root level of the project a new file `Results.json` will contain all
    the evaluation results
