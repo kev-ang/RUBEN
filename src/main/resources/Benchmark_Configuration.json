@@ -11,63 +11,6 @@
       "classpath": "at.sti2.engines.Jena"
     },
     {
-      "name": "SemReasoner_Persistent",
-      "classpath": "at.sti2.engines.SemReasoner",
-      "settings": {
-        "storage_mode": "PERSISTENT",
-        "edb_folder": "SemReasonerData/edb/",
-        "temp_folder": "SemReasonerData/temp/"
-      }
-    },
-    {
-      "name": "SemReasoner_Persistent_TopDown",
-      "classpath": "at.sti2.engines.SemReasoner",
-      "settings": {
-        "storage_mode": "PERSISTENT",
-        "edb_folder": "SemReasonerData/edb/",
-        "temp_folder": "SemReasonerData/temp/",
-        "top_down_reasoning": true
-      }
-    },
-    {
-      "name": "SemReasoner_Memory",
-      "classpath": "at.sti2.engines.SemReasoner",
-      "settings": {
-        "storage_mode": "MEMORY",
-        "edb_folder": "SemReasonerData/edb/",
-        "temp_folder": "SemReasonerData/temp/"
-      }
-    },
-    {
-      "name": "SemReasoner_Memory_TopDown",
-      "classpath": "at.sti2.engines.SemReasoner",
-      "settings": {
-        "storage_mode": "MEMORY",
-        "edb_folder": "SemReasonerData/edb/",
-        "temp_folder": "SemReasonerData/temp/",
-        "top_down_reasoning": true
-      }
-    },
-    {
-      "name": "SemReasoner_Mixed",
-      "classpath": "at.sti2.engines.SemReasoner",
-      "settings": {
-        "storage_mode": "MIXED",
-        "edb_folder": "SemReasonerData/edb/",
-        "temp_folder": "SemReasonerData/temp/"
-      }
-    },
-    {
-      "name": "SemReasoner_Mixed_TopDown",
-      "classpath": "at.sti2.engines.SemReasoner",
-      "settings": {
-        "storage_mode": "MIXED",
-        "edb_folder": "SemReasonerData/edb/",
-        "temp_folder": "SemReasonerData/temp/",
-        "top_down_reasoning": true
-      }
-    },
-    {
       "name": "Stardog",
       "classpath": "at.sti2.engines.Stardog"
     }
