@@ -8,7 +8,7 @@ import at.sti2.engines.RuleEngine;
 import at.sti2.model.benchmark_result.BenchmarkResult;
 import at.sti2.model.benchmark_result.RuleEngineResult;
 import at.sti2.utils.BenchmarkUtils;
-import at.sti2.utils.result_writer.JsonWriter;
+import at.sti2.utils.result_writer.CSVWriter;
 import at.sti2.utils.result_writer.ResultWriter;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +65,7 @@ public class Ruben {
     public static void main(String[] args) {
         Ruben benchmark = new Ruben();
         long start = System.currentTimeMillis();
-        benchmark.runEvaluation(args[0], new JsonWriter());
+        benchmark.runEvaluation(args[0], new CSVWriter());
         long end = System.currentTimeMillis();
         log.info("Benchmark finished in {} minutes!",
                  ((end - start) / (60 * 1000)));

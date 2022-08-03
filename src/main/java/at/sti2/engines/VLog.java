@@ -57,8 +57,9 @@ public class VLog implements RuleEngine {
                 log.info("Start materialization ...");
                 long start = System.currentTimeMillis();
                 reasoner.reason();
-                log.info("Materialization finished in {} ms!",
-                         (System.currentTimeMillis() - start));
+                log.info("Materialization finished in {} ms ({} s)!",
+                         (System.currentTimeMillis() - start),
+                         ((System.currentTimeMillis() - start) / 1000));
             } catch (Exception e) {
                 log.error("Error while preparing data and rules for VLog!", e);
             }
