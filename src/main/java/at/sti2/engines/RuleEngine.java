@@ -11,8 +11,6 @@ import java.util.Map;
  */
 public interface RuleEngine {
 
-    String getEngineIdentifier();
-
     /**
      * Returns the name of the engine as defined in the configuration.
      *

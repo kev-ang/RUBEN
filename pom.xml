@@ -99,6 +99,14 @@
       <artifactId>failureaccess</artifactId>
       <version>1.0.1</version>
     </dependency>
+
+    <!-- RDFox -->
+    <dependency>
+      <groupId>tech.oxfordsemantic</groupId>
+      <artifactId>rdfox</artifactId>
+      <version>5.6</version>
+    </dependency>
+
   </dependencies>
 
   <repositories>

@@ -21,9 +21,19 @@ For running the evaluation using all the currently included reasoning engines a
 docker installation is required. If you do not have docker installed, go
 to https://docs.docker.com/get-docker/
 
-Evaluating [SemReasoner](https://github.com/kev-ang/SemReasoner) requires the
-library that is available (on request). Copy
-this into the `/lib/` folder of the project.
+Evaluating [RDFox](https://www.oxfordsemantic.tech/product) requires to install
+the `JRDFox.jar` located in the `lib` folder into the local maven repository.
+Besides, a license is required.
+
+```
+mvn install:install-file \
+-Dfile=<path-to-file> \
+-DgroupId=tech.oxfordsemantic \
+-DartifactId=rdfox \
+-Dversion=5.6 \
+-Dpackaging=jar \
+-DgeneratePom=true
+```
 
 One of the evaluated reasoning engines is [Stardog](https://stardog.com) which
 requires a license key. A free license key is
@@ -101,6 +111,7 @@ runnable JAR.
 **Preview** more are comming within May 2022.
 
 ### Large joins, join 1, no query bindings
+
 |    query    | a(X,Y) | a(X,Y) | b1(X,Y) | b1(X,Y)| b2(X,Y) | b2(X,Y)|
 |:-----------:|--------|--------|---------|--------|---------|--------|
 | size        | 50000  | 250000 |  50000  | 250000 |  50000  | 250000 |
@@ -110,6 +121,7 @@ runnable JAR.
 | Stardog     |        |        |         |        |         |        |
 
 ### Datalog recursion, same generation, no query bindings
+
 |     size    | 50000 | 50000 | 500000 | 500000 |
 |:-----------:|-------|-------|--------|--------|
 | cyclic data | no    |  yes  |   no   |   yes  |
@@ -119,6 +131,7 @@ runnable JAR.
 | Stardog     |       |       |        |        |
 
 ### Datalog recursion, transitive closure, no query bindings
+
 |     size    | 50000 | 50000 | 500000 | 500000 |
 |:-----------:|-------|-------|--------|--------|
 | cyclic data | no    |  yes  |   no   |   yes  |
@@ -128,9 +141,11 @@ runnable JAR.
 | Stardog     |       |       |        |        |
 
 ## Known Issues
+
 ...
 
 ## Future Work
+
 ...
 
 ## Contribution

@@ -5,14 +5,6 @@
     {
       "name": "Drools",
       "classpath": "at.sti2.engines.Drools"
-    },
-    {
-      "name": "Jena",
-      "classpath": "at.sti2.engines.Jena"
-    },
-    {
-      "name": "Stardog",
-      "classpath": "at.sti2.engines.Stardog"
     }
   ],
   "testCases": [
