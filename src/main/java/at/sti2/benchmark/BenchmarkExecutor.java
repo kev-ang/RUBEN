@@ -72,7 +72,7 @@ public class BenchmarkExecutor {
 
         String queryFileClassPath =
             BenchmarkUtils.getFilePath(testDataPath,
-                                       engine.getEngineIdentifier(),
+                                       engine.getEngineName(),
                                        testCase,
                                        "_queries.json");
         QueryContainer queryContainer =

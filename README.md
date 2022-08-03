@@ -21,9 +21,17 @@ For running the evaluation using all the currently included reasoning engines a
 docker installation is required. If you do not have docker installed, go
 to https://docs.docker.com/get-docker/
 
-Evaluating [SemReasoner](https://github.com/kev-ang/SemReasoner) requires the
-library that is available (on request). Copy
-this into the `/lib/` folder of the project.
+Evaluating [Drools](https://www.drools.org/) resulted in `OutOfMemoryErrors` for
+all test cases. Therefore, we excluded Drools from the configuration. If you
+want to enable the evaluation for drools, insert the following configuration for
+the engines:
+
+```
+{
+   "name": "Drools",
+   "classpath": "at.sti2.engines.Drools"
+}
+```
 
 One of the evaluated reasoning engines is [Stardog](https://stardog.com) which
 requires a license key. A free license key is
@@ -92,45 +100,17 @@ runnable JAR.
    folder
 7. Execute the jar
    using `java -Xmx32g -jar OpenRuleBenchmark-1.0-SNAPSHOT-jar-with-dependencies.jar ./Benchmark_Configuration.json`
-8. When the evaluation is done, the console will show "DONE!"
+8. When the evaluation is done, the console will show "Benchmark finished in X
+   minutes!"
 9. In the same folder as the JAR a new file `Results.json` will contain all
    the evaluation results
 
-## Latest Benchmarking Results
-
-**Preview** more are comming within May 2022.
-
-### Large joins, join 1, no query bindings
-|    query    | a(X,Y) | a(X,Y) | b1(X,Y) | b1(X,Y)| b2(X,Y) | b2(X,Y)|
-|:-----------:|--------|--------|---------|--------|---------|--------|
-| size        | 50000  | 250000 |  50000  | 250000 |  50000  | 250000 |
-| Drools      |        |        |         |        |         |        |
-| Jena        |        |        |         |        |         |        |
-| SemReasoner |        |        |         |        |         |        |
-| Stardog     |        |        |         |        |         |        |
-
-### Datalog recursion, same generation, no query bindings
-|     size    | 50000 | 50000 | 500000 | 500000 |
-|:-----------:|-------|-------|--------|--------|
-| cyclic data | no    |  yes  |   no   |   yes  |
-| Drools      |       |       |        |        |
-| Jena        |       |       |        |        |
-| SemReasoner |       |       |        |        |
-| Stardog     |       |       |        |        |
-
-### Datalog recursion, transitive closure, no query bindings
-|     size    | 50000 | 50000 | 500000 | 500000 |
-|:-----------:|-------|-------|--------|--------|
-| cyclic data | no    |  yes  |   no   |   yes  |
-| Drools      |       |       |        |        |
-| Jena        |       |       |        |        |
-| SemReasoner |       |       |        |        |
-| Stardog     |       |       |        |        |
-
 ## Known Issues
+
 ...
 
 ## Future Work
+
 ...
 
 ## Contribution

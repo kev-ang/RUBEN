@@ -18,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Stardog implements RuleEngine {
 
-    private static final String ENGINE_IDENTIFIER = "Stardog";
-
     private static final String DATABASE_IDENTIFIER = "OpenRuleBenchDatabase";
     private static final String SERVER_URL = "http://localhost:5820";
     private static final String USER = "admin";
@@ -35,7 +33,7 @@ public class Stardog implements RuleEngine {
     public Stardog() {
         log.info("Setting up docker container for stardog evaluation.");
         try {
-            DockerUtils.startContainerForEngine(ENGINE_IDENTIFIER);
+            DockerUtils.startContainerForEngine(engineName);
             log.info(
                 "Started docker container, waiting for 30 seconds to make sure it is started...");
             Thread.sleep(30 * 1000);
@@ -43,11 +41,6 @@ public class Stardog implements RuleEngine {
         } catch (Exception e) {
             log.error("Error setting up docker for stardog!", e);
         }
-    }
-
-    @Override
-    public String getEngineIdentifier() {
-        return ENGINE_IDENTIFIER;
     }
 
     @Override
@@ -67,7 +60,7 @@ public class Stardog implements RuleEngine {
     @Override
     public void prepare(String testDataPath, TestCaseConfiguration testCase) {
         String absoluteDataPath =
-            BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER,
+            BenchmarkUtils.getFilePath(testDataPath, engineName,
                                        testCase, ".nt");
         if (BenchmarkUtils.fileExists(absoluteDataPath)) {
             try {
@@ -88,14 +81,13 @@ public class Stardog implements RuleEngine {
 
                 databaseConnection.begin();
 
-
                 log.info("Loading data from path: {}", absoluteDataPath);
                 databaseConnection.add().io().format(RDFFormats.NTRIPLES)
                                   .stream(
                                       new FileInputStream(absoluteDataPath));
 
                 String absoluteRulePath =
-                    BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER,
+                    BenchmarkUtils.getFilePath(testDataPath, engineName,
                                                testCase, ".ttl");
                 log.info("Loading rule from path: {}", absoluteRulePath);
                 databaseConnection.add().io()

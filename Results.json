@@ -1,0 +1,13 @@
+{
+  "benchmarkEngineResults" : {
+    "VLog" : {
+      "name" : "VLog",
+      "benchmarkTestCaseResults" : {
+        "large_joins_join1_d1000_relsize50000_cyc" : {
+          "name" : "large_joins_join1_d1000_relsize50000_cyc",
+          "queryResults" : { }
+        }
+      }
+    }
+  }
+}

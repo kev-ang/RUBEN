@@ -1,7 +1,7 @@
 package at.sti2.engines;
 
-import at.sti2.utils.BenchmarkUtils;
 import at.sti2.configuration.TestCaseConfiguration;
+import at.sti2.utils.BenchmarkUtils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -22,19 +22,11 @@ import org.kie.internal.io.ResourceFactory;
 @Slf4j
 public class Drools implements RuleEngine {
 
-
-    private static final String ENGINE_IDENTIFIER = "Drools";
-
     private String engineName;
 
     private KieContainer kieContainer;
 
     private KieSession kieSession;
-
-    @Override
-    public String getEngineIdentifier() {
-        return ENGINE_IDENTIFIER;
-    }
 
     @Override
     public String getEngineName() {
@@ -53,10 +45,10 @@ public class Drools implements RuleEngine {
     @Override
     public void prepare(String testDataPath, TestCaseConfiguration testCase) {
         String absoluteDataFilePath =
-            BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER,
+            BenchmarkUtils.getFilePath(testDataPath, engineName,
                                        testCase, ".drools");
         String absoluteRuleFilePath = BenchmarkUtils.getFilePath(testDataPath,
-                                                                 ENGINE_IDENTIFIER,
+                                                                 engineName,
                                                                  testCase,
                                                                  ".drl");
 

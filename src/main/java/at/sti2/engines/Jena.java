@@ -1,7 +1,7 @@
 package at.sti2.engines;
 
-import at.sti2.utils.BenchmarkUtils;
 import at.sti2.configuration.TestCaseConfiguration;
+import at.sti2.utils.BenchmarkUtils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Iterator;
@@ -24,8 +24,6 @@ import org.codehaus.plexus.util.StringUtils;
 @Slf4j
 public class Jena implements RuleEngine {
 
-    private static final String ENGINE_IDENTIFIER = "Jena";
-
     private String engineName;
 
     private static final String NAMESPACE = "";
@@ -34,11 +32,6 @@ public class Jena implements RuleEngine {
     private Reasoner reasoner;
 
     private InfModel infModel;
-
-    @Override
-    public String getEngineIdentifier() {
-        return ENGINE_IDENTIFIER;
-    }
 
     @Override
     public String getEngineName() {
@@ -57,7 +50,8 @@ public class Jena implements RuleEngine {
     @Override
     public void prepare(String testDataPath, TestCaseConfiguration testCase) {
         String absoluteDataPath =
-            BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER, testCase, ".jena");
+            BenchmarkUtils.getFilePath(testDataPath, engineName, testCase,
+                                       ".jena");
         if (BenchmarkUtils.fileExists(absoluteDataPath)) {
             try {
                 log.info("Loading data from path: {}", absoluteDataPath);
@@ -75,7 +69,8 @@ public class Jena implements RuleEngine {
                 bufRead.close();
 
                 String absoluteRulePath =
-                    BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER, testCase, ".rules");
+                    BenchmarkUtils.getFilePath(testDataPath, engineName,
+                                               testCase, ".rules");
                 log.info("Loading rules from path: {}", absoluteRulePath);
                 List<Rule> rules =
                     Rule.rulesFromURL("file:" + absoluteRulePath);

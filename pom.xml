@@ -11,6 +11,8 @@
   <properties>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+    <rulewerkVersion>0.8.0</rulewerkVersion>
+    <rulewerkGroupId>org.semanticweb.rulewerk</rulewerkGroupId>
   </properties>
 
   <build>
@@ -98,6 +100,43 @@
       <groupId>com.google.guava</groupId>
       <artifactId>failureaccess</artifactId>
       <version>1.0.1</version>
+    </dependency>
+
+    <!-- VLog -->
+    <dependency>
+      <groupId>${rulewerkGroupId}</groupId>
+      <artifactId>rulewerk-core</artifactId>
+      <version>${rulewerkVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>${rulewerkGroupId}</groupId>
+      <artifactId>rulewerk-vlog</artifactId>
+      <version>${rulewerkVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>${rulewerkGroupId}</groupId>
+      <artifactId>rulewerk-parser</artifactId>
+      <version>${rulewerkVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>${rulewerkGroupId}</groupId>
+      <artifactId>rulewerk-owlapi</artifactId>
+      <version>${rulewerkVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>${rulewerkGroupId}</groupId>
+      <artifactId>rulewerk-graal</artifactId>
+      <version>${rulewerkVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>${rulewerkGroupId}</groupId>
+      <artifactId>rulewerk-rdf</artifactId>
+      <version>${rulewerkVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>${rulewerkGroupId}</groupId>
+      <artifactId>rulewerk-commands</artifactId>
+      <version>${rulewerkVersion}</version>
     </dependency>
   </dependencies>
 
