@@ -26,6 +26,7 @@ public class CSVWriter implements ResultWriter {
                 try (BufferedWriter bw = new BufferedWriter(
                     new FileWriter(resultFile))) {
                     bw.write("Query;NrResults;Time (in ms);Exception");
+                    bw.newLine();
                     for (QueryResult currentQuery : testCase.getValue()
                                                             .getQueryResults()
                                                             .values()) {
