@@ -4,6 +4,12 @@ This evaluation framework is based on the OpenRuleBench [1] scripts. The aim is
 to evaluate rule based reasoning engines with various tests covering well-known
 tasks of reasoning engines.
 
+## Component Diagram
+
+![RUBEN_COMPONENT_DIAGRAM](docu/RUBEN_Component_Diagram.png)
+
+Component diagram including the currently supported rule engines.
+
 ## Test data
 
 The test data for the reasoning engines was created by using the data generators
