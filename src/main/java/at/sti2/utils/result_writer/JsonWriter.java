@@ -6,6 +6,11 @@ import java.io.File;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * JSON result writer. The output is a single JSON file containing all results.
+ *
+ * @author kevin.angele@sti2.at
+ */
 @Slf4j
 public class JsonWriter implements ResultWriter {
 

@@ -11,6 +11,11 @@ import java.io.IOException;
 import java.util.Map.Entry;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Writes dedicated CSV files for each test case.
+ *
+ * @author kevin.angele@sti2.at
+ */
 @Slf4j
 public class CSVWriter implements ResultWriter {
 
