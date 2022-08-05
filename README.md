@@ -10,9 +10,9 @@ The test data for the reasoning engines was created by using the data generators
 provided by OpenRuleBench. For engines not covered in the latest run of
 OpenRuleBench, we transformed the data and rules manually.
 
-The test data set used for the evaluation in the paper "SemReasoner - A
-high-performance Knowledge Graph Store and rule-based Reasoner" can be found
-[here](https://drive.google.com/file/d/17qSa3PrHFnV6YmdHcGPqxlkqRCXiRtwz/view?usp=sharing)
+The test data set used for the evaluation in the paper "RUBEN: A Rule Engine
+Benchmarking Framework" can be found
+[here](http://dataset.sti2.at/RUBEN/)
 .
 
 ## Prerequesites
@@ -81,9 +81,13 @@ runnable JAR.
     2. Set the path to the configuration file as program argument (e.g.,
        ./src/main/resources/Benchmark_Configuration.json)
 5. Run the main-method within `at.sti2.Ruben`
-6. When the evaluation is done, the console will show "DONE!"
-7. On the root level of the project a new file `Results.json` will contain all
-   the evaluation results
+6. When the evaluation is done, the console will show "Benchmark finished in X
+   minutes!"
+7. Based on the selected `ResultWriter` (currently this needs to be changed in
+   the `main` method of the `at.sti2.Ruben` class) the results will have the
+   following structure:
+    - `CSVWriter`: Will create one CSV file for each testcase
+    - `JSONWriter`: Will generate a single `Results.json` file
 
 ### Runnable JAR
 
@@ -102,16 +106,22 @@ runnable JAR.
    using `java -Xmx32g -jar OpenRuleBenchmark-1.0-SNAPSHOT-jar-with-dependencies.jar ./Benchmark_Configuration.json`
 8. When the evaluation is done, the console will show "Benchmark finished in X
    minutes!"
-9. In the same folder as the JAR a new file `Results.json` will contain all
-   the evaluation results
+9. In the same folder as the JAR the evaluation results will be stored
+    - Based on the selected `ResultWriter` (currently this needs to be changed
+      in
+      the `main` method of the `at.sti2.Ruben` class) the results will have the
+      following structure:
+        - `CSVWriter`: Will create one CSV file for each testcase
+        - `JSONWriter`: Will generate a single `Results.json` file
 
 ## Known Issues
 
-...
+- `OutOfMemoryError` handling not given for Drools. Therefore, the evaluation
+  crashes when Drools is included.
 
 ## Future Work
 
-...
+- Include RDFox into the benchmarking framework
 
 ## Contribution
 
