@@ -54,7 +54,11 @@ public class BenchmarkExecutor {
             ruleEngineResult.addTestCaseResult(testCaseResult);
 
             log.info("... running test case {}", testCase.getName());
+            long preparationStart = System.currentTimeMillis();
             engine.prepare(testDataPath, testCase);
+            ruleEngineResult.setPreparationTime(
+                System.currentTimeMillis() - preparationStart);
+            
             Map<String, QueryResult> result =
                 executeTestCase(testDataPath, engine, testCase);
             testCaseResult.getQueryResults().putAll(result);

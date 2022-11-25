@@ -4,6 +4,7 @@ import at.sti2.configuration.TestCaseConfiguration;
 import at.sti2.utils.BenchmarkUtils;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,7 +22,17 @@ import tech.oxfordsemantic.jrdfox.exceptions.JRDFoxException;
 @Slf4j
 public class RDFox implements RuleEngine {
 
-    private static final String LICENSE_KEY_PATH = "/home/user/rdfox.lic";
+    private static final String LICENSE_KEY_PATH =
+        "/Users/Kevin/Documents/GitHub/Kev_ang/RuleEngineBenchmark/src/main/resources/RDFox.lic";
+
+    private static final String SERVER_DIRECTORY_PATH =
+        "/Users/Kevin/Documents/GitHub/Kev_ang/RuleEngineBenchmark/data/rdfox";
+
+    private static final String LOCAL_SERVER_URL = "rdfox:local";
+
+    private static final String LOCAL_SERVER_USER = "admin";
+
+    private static final String LOCAL_SERVER_PASSWORD = "admin";
 
     private static final String DATASTORE_IDENTIFIER = "RDFoxRuben";
 
@@ -33,21 +44,43 @@ public class RDFox implements RuleEngine {
 
     private DataStoreConnection dataStoreConnection;
 
-    Prefixes prefixes = new Prefixes();
+    Prefixes prefixes;
 
     public RDFox() {
         Map<String, String> serverParams = new HashMap<>();
         serverParams.put("license-file", LICENSE_KEY_PATH);
         try {
-            String[] localServers =
-                ConnectionFactory.startLocalServer(serverParams);
+            Map<String, String> serverParameters = new HashMap<>();
+            serverParameters.put("persist-ds", "file");
+            serverParameters.put("persist-roles", "file");
+            serverParameters.put("server-directory", SERVER_DIRECTORY_PATH);
+            serverParameters.put("license-file", LICENSE_KEY_PATH);
+            String[] warnings =
+                ConnectionFactory.startLocalServer(serverParameters);
+            /* ... handle warnings ... */
+
+            if (ConnectionFactory.getNumberOfLocalServerRoles() == 0) {
+                System.out.println("Initializing server directory...");
+                ConnectionFactory.createFirstLocalServerRole(LOCAL_SERVER_USER,
+                                                             LOCAL_SERVER_PASSWORD);
+            } else {
+                System.out.println("Server directory is already initialized!");
+            }
+
             serverConnection =
-                ConnectionFactory.newServerConnection(localServers[0], "", "");
-            serverConnection.createDataStore(DATASTORE_IDENTIFIER,
-                                             Collections.emptyMap());
+                ConnectionFactory.newServerConnection(LOCAL_SERVER_URL,
+                                                      LOCAL_SERVER_USER,
+                                                      LOCAL_SERVER_PASSWORD);
+
+            if (!serverConnection.containsDataStore(DATASTORE_IDENTIFIER)) {
+                serverConnection.createDataStore(DATASTORE_IDENTIFIER,
+                                                 Collections.emptyMap());
+            }
             serverConnection.setNumberOfThreads(2);
 
+            prefixes = new Prefixes();
             prefixes.declareStandardPrefixes();
+            prefixes.declarePrefix(":", NAMESPACE);
         } catch (JRDFoxException e) {
             log.error("Error while starting local RDFox Server", e);
         }
@@ -77,26 +110,28 @@ public class RDFox implements RuleEngine {
                 dataStoreConnection = serverConnection.newDataStoreConnection(
                     DATASTORE_IDENTIFIER);
 
-                log.info("Importing RDF Data from file {}", absoluteDataPath);
-                try (InputStream inputStream = new BufferedInputStream(
-                    new FileInputStream(absoluteDataPath))) {
-                    dataStoreConnection.importData(UpdateType.ADDITION,
-                                                   Prefixes.s_emptyPrefixes,
-                                                   inputStream);
-                }
-                log.info("Number of tuples after import: " +
-                         getTriplesCount(dataStoreConnection, "all"));
+                /*
+                Add all rules before the facts or add rules and facts in an arbitrary order but grouped in a single transaction.
+                This will usually increase the performance of the first reasoning operation.
+
+                https://www.oxfordsemantic.tech/blog/the-dos-and-donts-of-rule-and-query-writing
+                 */
 
                 String absoluteRulePath =
                     BenchmarkUtils.getFilePath(testDataPath, engineName,
-                                               testCase, ".ttl");
+                                               testCase, ".rls");
 
                 System.out.println("Importing rules from a file...");
-                try (InputStream inputStream = new BufferedInputStream(
-                    new FileInputStream(absoluteRulePath))) {
-                    dataStoreConnection.importData(UpdateType.ADDITION,
-                                                   prefixes, inputStream);
-                }
+                loadData(absoluteRulePath);
+
+                long start = System.currentTimeMillis();
+                log.info("Importing RDF Data from file {}", absoluteDataPath);
+                loadData(absoluteDataPath);
+                long end = System.currentTimeMillis();
+                log.info("Loading took: {} ms", (end - start));
+
+                log.info("Number of tuples after import: " +
+                         getTriplesCount(dataStoreConnection, "all"));
 
             } catch (Exception e) {
                 log.error("Error while preparing RDFox!", e);
@@ -127,7 +162,6 @@ public class RDFox implements RuleEngine {
     public void cleanUp() {
         try {
             dataStoreConnection.clear();
-            dataStoreConnection.close();
         } catch (JRDFoxException e) {
             log.error("Error while cleaning datastore!", e);
         }
@@ -164,6 +198,16 @@ public class RDFox implements RuleEngine {
             } finally {
                 dataStoreConnection.rollbackTransaction();
             }
+        }
+    }
+
+    private void loadData(String dataPath)
+        throws JRDFoxException, IOException {
+        try (InputStream inputStream = new BufferedInputStream(
+            new FileInputStream(dataPath))) {
+            dataStoreConnection.importData(UpdateType.ADDITION,
+                                           prefixes,
+                                           inputStream);
         }
     }
 }

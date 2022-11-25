@@ -10,10 +10,12 @@ import lombok.Data;
 public class RuleEngineResult {
 
     private String name;
+
+    private long preparationTime;
     private Map<String, TestCaseResult> benchmarkTestCaseResults;
 
     public RuleEngineResult(String name) {
-        this(name, new HashMap<>());
+        this(name, -1, new HashMap<>());
     }
 
     public void addTestCaseResult(TestCaseResult testCaseResult) {
