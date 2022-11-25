@@ -15,8 +15,8 @@ package "BenchmarkExecution" {
 package "RuleEngines"{
     [Drools] -up-> () "RuleEngine" : implements
     [Jena] -up-> () "RuleEngine" : implements
-    [SemReasoner] -up-> () "RuleEngine" : implements
     [Stardog] -up-> () "RuleEngine" : implements
+    [VLog] -up-> () "RuleEngine" : implements
 }
 
 

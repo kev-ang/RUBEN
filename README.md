@@ -4,15 +4,21 @@ This evaluation framework is based on the OpenRuleBench [1] scripts. The aim is
 to evaluate rule based reasoning engines with various tests covering well-known
 tasks of reasoning engines.
 
+## Component Diagram
+
+![RUBEN_COMPONENT_DIAGRAM](docu/RUBEN_Component_Diagram.png)
+
+Component diagram including the currently supported rule engines.
+
 ## Test data
 
 The test data for the reasoning engines was created by using the data generators
 provided by OpenRuleBench. For engines not covered in the latest run of
 OpenRuleBench, we transformed the data and rules manually.
 
-The test data set used for the evaluation in the paper "SemReasoner - A
-high-performance Knowledge Graph Store and rule-based Reasoner" can be found
-[here](https://drive.google.com/file/d/17qSa3PrHFnV6YmdHcGPqxlkqRCXiRtwz/view?usp=sharing)
+The test data set used for the evaluation in the paper "RUBEN: A Rule Engine
+Benchmarking Framework" can be found
+[here](http://dataset.sti2.at/RUBEN/)
 .
 
 ## Prerequesites
@@ -34,6 +40,17 @@ mvn install:install-file \
 -Dversion=5.6 \
 -Dpackaging=jar \
 -DgeneratePom=true
+```
+Evaluating [Drools](https://www.drools.org/) resulted in `OutOfMemoryErrors` for
+all test cases. Therefore, we excluded Drools from the configuration. If you
+want to enable the evaluation for drools, insert the following configuration for
+the engines:
+
+```
+{
+   "name": "Drools",
+   "classpath": "at.sti2.engines.Drools"
+}
 ```
 
 One of the evaluated reasoning engines is [Stardog](https://stardog.com) which
@@ -84,9 +101,13 @@ runnable JAR.
     2. Set the path to the configuration file as program argument (e.g.,
        ./src/main/resources/Benchmark_Configuration.json)
 5. Run the main-method within `at.sti2.Ruben`
-6. When the evaluation is done, the console will show "DONE!"
-7. On the root level of the project a new file `Results.json` will contain all
-   the evaluation results
+6. When the evaluation is done, the console will show "Benchmark finished in X
+   minutes!"
+7. Based on the selected `ResultWriter` (currently this needs to be changed in
+   the `main` method of the `at.sti2.Ruben` class) the results will have the
+   following structure:
+    - `CSVWriter`: Will create one CSV file for each testcase
+    - `JSONWriter`: Will generate a single `Results.json` file
 
 ### Runnable JAR
 
@@ -103,6 +124,15 @@ runnable JAR.
    folder
 7. Execute the jar
    using `java -Xmx32g -jar OpenRuleBenchmark-1.0-SNAPSHOT-jar-with-dependencies.jar ./Benchmark_Configuration.json`
+8. When the evaluation is done, the console will show "Benchmark finished in X
+   minutes!"
+9. In the same folder as the JAR the evaluation results will be stored
+    - Based on the selected `ResultWriter` (currently this needs to be changed
+      in
+      the `main` method of the `at.sti2.Ruben` class) the results will have the
+      following structure:
+        - `CSVWriter`: Will create one CSV file for each testcase
+        - `JSONWriter`: Will generate a single `Results.json` file
 8. When the evaluation is done, the console will show "DONE!"
 9. In the same folder as the JAR a new file `Results.json` will contain all
    the evaluation results
@@ -143,11 +173,12 @@ runnable JAR.
 
 ## Known Issues
 
-...
+- `OutOfMemoryError` handling not given for Drools. Therefore, the evaluation
+  crashes when Drools is included.
 
 ## Future Work
 
-...
+- Include RDFox into the benchmarking framework
 
 ## Contribution
 

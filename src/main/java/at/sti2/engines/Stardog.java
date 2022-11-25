@@ -129,7 +129,8 @@ public class Stardog implements RuleEngine {
     }
 
     private void dropDatabase(AdminConnection aAdminConnection) {
-        if (aAdminConnection.list().contains(DATABASE_IDENTIFIER)) {
+        if (aAdminConnection != null &&
+            aAdminConnection.list().contains(DATABASE_IDENTIFIER)) {
             aAdminConnection.drop(DATABASE_IDENTIFIER);
         }
     }
