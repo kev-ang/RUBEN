@@ -22,7 +22,8 @@ docker installation is required. If you do not have docker installed, go
 to https://docs.docker.com/get-docker/
 
 Evaluating [RDFox](https://www.oxfordsemantic.tech/product) requires to install
-the `JRDFox.jar` located in the `lib` folder into the local maven repository.
+the `JRDFox.jar` from [here](https://www.oxfordsemantic.tech/downloads) into the
+local maven repository.
 Besides, a license is required.
 
 ```
