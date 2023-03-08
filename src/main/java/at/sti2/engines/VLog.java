@@ -3,6 +3,7 @@ package at.sti2.engines;
 import at.sti2.configuration.TestCaseConfiguration;
 import at.sti2.utils.BenchmarkUtils;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.semanticweb.rulewerk.core.model.api.PositiveLiteral;
@@ -32,6 +33,11 @@ public class VLog implements RuleEngine {
     }
 
     @Override
+    public Map<String, Object> getSettings() {
+        return null;
+    }
+
+    @Override
     public void setSettings(Map<String, Object> settings) {
 
     }
@@ -53,16 +59,19 @@ public class VLog implements RuleEngine {
                 RuleParser.parseInto(knowledgeBase,
                                      new FileInputStream(absoluteDataPath));
                 reasoner = new VLogReasoner(knowledgeBase);
-
-                log.info("Start materialization ...");
-                long start = System.currentTimeMillis();
-                reasoner.reason();
-                log.info("Materialization finished in {} ms ({} s)!",
-                         (System.currentTimeMillis() - start),
-                         ((System.currentTimeMillis() - start) / 1000));
             } catch (Exception e) {
                 log.error("Error while preparing data and rules for VLog!", e);
             }
+        }
+    }
+
+    @Override
+    public void materialize(String testDataPath,
+                            TestCaseConfiguration testCase) {
+        try {
+            reasoner.reason();
+        } catch (IOException e) {
+            log.error("Error while materializing rules!", e);
         }
     }
 
@@ -84,7 +93,7 @@ public class VLog implements RuleEngine {
 
     @Override
     public void cleanUp() {
-        reasoner.close();
+        reasoner.resetReasoner();
     }
 
     @Override

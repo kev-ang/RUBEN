@@ -14,5 +14,9 @@
   {
     "name": "VLog",
     "classpath": "at.sti2.engines.VLog"
+  },
+  {
+    "name": "RDFox",
+    "classpath": "at.sti2.engines.RDFox"
   }
 ]

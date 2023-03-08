@@ -3,3 +3,5 @@ target/*
 /target/
 data/
 lib/
+out/artifacts/OpenRuleBenchmark_jar/OpenRuleBenchmark.jar
+out/artifacts/RuleEngineBenchmark_jar/RuleEngineBenchmark.jar

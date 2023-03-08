@@ -26,6 +26,14 @@ public interface RuleEngine {
     void setEngineName(String engineName);
 
     /**
+     * Return rule engine specific settings. The rule engine gets those settings
+     * in a map consisting of key-value pairs.
+     *
+     * @return settings to be used for the rule engine
+     */
+    Map<String, Object> getSettings();
+
+    /**
      * Rule engine specific settings are provided via this method. The rule
      * engine gets those settings in a map consisting of key-value pairs.
      *
@@ -42,6 +50,16 @@ public interface RuleEngine {
      * @param testCase     to be prepared.
      */
     void prepare(String testDataPath, TestCaseConfiguration testCase);
+
+    /**
+     * Run the materialization for the first time or re-run the materialization
+     * if it is part of the rule loading process. Leave method body empty if
+     * materialization is not supported.
+     *
+     * @param testDataPath directory containing all the test data.
+     * @param testCase     to be prepared.
+     */
+    void materialize(String testDataPath, TestCaseConfiguration testCase);
 
     /**
      * Executes a single query. As a return value the number of results need to

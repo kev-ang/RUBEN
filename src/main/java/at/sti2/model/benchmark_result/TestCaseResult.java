@@ -11,10 +11,12 @@ import lombok.Data;
 public class TestCaseResult {
 
     private String name;
+
+    private long materializationTime;
     private Map<String, QueryResult> queryResults;
 
     public TestCaseResult(TestCaseConfiguration testCase) {
-        this(testCase.getName(), new HashMap<>());
+        this(testCase.getName(), -1, new HashMap<>());
     }
 
     public void addQueryResult(QueryResult queryResult) {

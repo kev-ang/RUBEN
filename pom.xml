@@ -18,22 +18,44 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
         <configuration>
-          <archive>
-            <manifest>
-              <mainClass>at.sti2.Ruben</mainClass>
-            </manifest>
-          </archive>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>at.sti2.Ruben</mainClass>
+            </manifest>
+          </archive>
         </configuration>
+        <executions>
+          <execution>
+            <id>assemble-all</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
 
   <dependencies>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>31.1-jre</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <version>4.4.16</version>
+    </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -58,27 +80,15 @@
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
       <version>1.2.11</version>
-    </dependency>
-
-    <!-- Reasoning engines -->
-
-    <!-- Drools -->
-    <dependency>
-      <groupId>org.kie</groupId>
-      <artifactId>kie-ci</artifactId>
-      <version>7.68.0.Final</version>
       <exclusions>
         <exclusion>
-          <groupId>com.google.inject</groupId>
-          <artifactId>guice</artifactId>
+          <groupId>org.apache.jena</groupId>
+          <artifactId>jena-shaded-guava</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.drools</groupId>
-      <artifactId>drools-decisiontables</artifactId>
-      <version>7.68.0.Final</version>
-    </dependency>
+
+    <!-- Reasoning engines -->
 
     <!-- Jena -->
     <dependency>
@@ -92,14 +102,8 @@
     <dependency>
       <groupId>com.complexible.stardog</groupId>
       <artifactId>client-http</artifactId>
-      <version>7.9.0</version>
+      <version>8.2.0</version>
       <type>pom</type>
-    </dependency>
-
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>failureaccess</artifactId>
-      <version>1.0.1</version>
     </dependency>
 
     <!-- VLog -->
@@ -122,6 +126,12 @@
       <groupId>${rulewerkGroupId}</groupId>
       <artifactId>rulewerk-owlapi</artifactId>
       <version>${rulewerkVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.guava</groupId>
+          <artifactId>guava</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>${rulewerkGroupId}</groupId>
@@ -142,7 +152,7 @@
     <!-- RDFox -->
     <dependency>
       <groupId>tech.oxfordsemantic</groupId>
-      <artifactId>rdfox</artifactId>
+      <artifactId>rdfox_linux</artifactId>
       <version>6.0</version>
     </dependency>
 
@@ -150,7 +160,7 @@
     <dependency>
       <groupId>com.semedy</groupId>
       <artifactId>reasoner</artifactId>
-      <version>5.5.0</version>
+      <version>5.6.6</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -198,6 +208,21 @@
       <version>2.9.1</version>
     </dependency>
     <dependency>
+      <groupId>org.lz4</groupId>
+      <artifactId>lz4-java</artifactId>
+      <version>1.7.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>4.9.2</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <version>1.4.7</version>
+    </dependency>
+    <dependency>
       <groupId>net.sf.trove4j</groupId>
       <artifactId>trove4j</artifactId>
       <version>3.0.3</version>
@@ -222,16 +247,6 @@
           <artifactId>log4j-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.lz4</groupId>
-      <artifactId>lz4-java</artifactId>
-      <version>1.7.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr4-runtime</artifactId>
-      <version>4.9.2</version>
     </dependency>
     <dependency>
       <groupId>com.j2html</groupId>
@@ -269,14 +284,15 @@
       <version>1.1.4</version>
     </dependency>
     <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-      <version>1.4.7</version>
-    </dependency>
-    <dependency>
       <groupId>com.pi4j</groupId>
       <artifactId>pi4j-core</artifactId>
       <version>1.4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.github.erosb</groupId>
+      <artifactId>everit-json-schema</artifactId>
+      <version>1.14.1</version>
     </dependency>
 
   </dependencies>

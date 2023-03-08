@@ -58,7 +58,13 @@ public class BenchmarkExecutor {
             engine.prepare(testDataPath, testCase);
             ruleEngineResult.setPreparationTime(
                 System.currentTimeMillis() - preparationStart);
-            
+
+            log.info("starting materialization ...");
+            long materializationStart = System.currentTimeMillis();
+            engine.materialize(testDataPath, testCase);
+            testCaseResult.setMaterializationTime(
+                System.currentTimeMillis() - materializationStart);
+
             Map<String, QueryResult> result =
                 executeTestCase(testDataPath, engine, testCase);
             testCaseResult.getQueryResults().putAll(result);
@@ -76,7 +82,8 @@ public class BenchmarkExecutor {
 
         String queryFileClassPath =
             BenchmarkUtils.getFilePath(testDataPath,
-                                       engine.getEngineName(),
+                                       BenchmarkUtils.getEngineDataFolder(
+                                           engine),
                                        testCase,
                                        "_queries.json");
         QueryContainer queryContainer =

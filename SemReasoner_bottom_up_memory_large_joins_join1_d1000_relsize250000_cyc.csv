@@ -1,0 +1,21 @@
+Preparation Time;Materialization;Query;NrResults;Time (in ms);Exception
+184;0;join1 250000 b2 no bindings;1000000;316;null
+184;0;join1 250000 b1 1st argument bound;0;10;null
+184;0;join1 250000 b2 no bindings;1000000;316;null
+184;0;join1 250000 b1 no bindings;1000000;307;null
+184;0;join1 250000 b1 no bindings;1000000;307;null
+184;0;join1 250000 b1 1st argument bound;0;10;null
+184;0;join1 250000 b1 2nd argument bound;0;13;null
+184;0;join1 250000 b1 2nd argument bound;0;13;null
+184;0;join1 250000 b2 2nd argument bound;0;5;null
+184;0;join1 250000 b2 2nd argument bound;0;5;null
+184;0;join1 250000 b2 1st argument bound;0;14;null
+184;0;join1 250000 a 5x1;1000000;6354;null
+184;0;join1 250000 b2 1st argument bound;0;14;null
+184;0;join1 250000 a 5x1;1000000;6354;null
+184;0;join1 250000 a1 no bindings;1000000;422;null
+184;0;join1 250000 a1 2nd argument bound;0;5;null
+184;0;join1 250000 a1 no bindings;1000000;422;null
+184;0;join1 250000 a1 2nd argument bound;0;5;null
+184;0;join1 250000 a1 1st argument bound;0;6;null
+184;0;join1 250000 a1 1st argument bound;0;6;null

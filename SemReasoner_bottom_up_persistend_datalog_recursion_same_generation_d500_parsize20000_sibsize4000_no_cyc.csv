@@ -1,0 +1,3 @@
+Preparation Time;Materialization;Query;NrResults;Time (in ms);Exception
+1506;0;d500_parsize20000_sibsize4000_no_cyc query;244695;689;null
+1506;0;d500_parsize20000_sibsize4000_no_cyc query;244695;689;null

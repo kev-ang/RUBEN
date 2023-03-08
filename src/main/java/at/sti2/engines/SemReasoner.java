@@ -22,8 +22,6 @@ import org.apache.commons.io.FileUtils;
 @Slf4j
 public class SemReasoner implements RuleEngine {
 
-    private static final String ENGINE_IDENTIFIER = "SemReasoner";
-
     private String engineName;
 
     private Map<String, Object> settings;
@@ -42,6 +40,11 @@ public class SemReasoner implements RuleEngine {
     }
 
     @Override
+    public Map<String, Object> getSettings() {
+        return settings;
+    }
+
+    @Override
     public void setSettings(Map<String, Object> settings) {
         this.settings = settings;
     }
@@ -49,18 +52,24 @@ public class SemReasoner implements RuleEngine {
     @Override
     public void prepare(String testDataPath, TestCaseConfiguration testCase) {
         String absoluteDataFilePath =
-            BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER,
+            BenchmarkUtils.getFilePath(testDataPath,
+                                       BenchmarkUtils.getEngineDataFolder(this),
                                        testCase, ".fct");
         if (BenchmarkUtils.fileExists(absoluteDataFilePath)) {
             try {
                 String absoluteRuleFilePath =
-                    BenchmarkUtils.getFilePath(testDataPath, ENGINE_IDENTIFIER,
+                    BenchmarkUtils.getFilePath(testDataPath,
+                                               BenchmarkUtils.getEngineDataFolder(
+                                                   this),
                                                testCase, ".rls");
                 Configuration configuration = new Configuration();
                 configuration.setEDBStorageType(getStorageType());
                 configuration.setTopDownReasoning(isTopDownReasoningEnabled());
                 configuration.setEDBDir(getEDBPath());
                 configuration.setTempDir(getTempDirPath());
+                configuration.setBodyOrdering(isBodyOrderingEnabled());
+                //configuration.setReasoningThreads(getReasoningThreads());
+
                 core = new Core(configuration);
                 ddb = new DeductiveDatabase(core);
 
@@ -75,6 +84,28 @@ public class SemReasoner implements RuleEngine {
                 log.info("Loading data and rules was successfully!");
             } catch (Exception e) {
                 log.error("Error while preparing SemReasoner!", e);
+            }
+        }
+    }
+
+    @Override
+    public void materialize(String testDataPath,
+                            TestCaseConfiguration testCase) {
+        String materializationFilePath =
+            BenchmarkUtils.getFilePath(testDataPath,
+                                       BenchmarkUtils.getEngineDataFolder(this),
+                                       testCase, ".mat");
+        if (BenchmarkUtils.fileExists(materializationFilePath)) {
+            try {
+                log.info("Loading materialization file from path: {}",
+                         materializationFilePath);
+                ddb.load(new InterruptFlag(), materializationFilePath);
+            } catch (IOException | SemReasonerException e) {
+                log.error("Error while materializing rules!", e);
+            } catch (InterruptedException e) {
+                log.error("Thread was interrupted while materializing rules!",
+                          e);
+                Thread.currentThread().interrupt();
             }
         }
     }
@@ -106,7 +137,7 @@ public class SemReasoner implements RuleEngine {
             while (!core.isShutDownFinished()) {
                 Thread.sleep(500);
             }
-            FileUtils.deleteDirectory(new File("SemReasonerData/"));
+            FileUtils.deleteDirectory(new File("/data/" + engineName + "/"));
         } catch (SemReasonerException | InterruptedException | IOException e) {
             log.error("Error shutting down SemReasoner!", e);
         }
@@ -152,7 +183,8 @@ public class SemReasoner implements RuleEngine {
     }
 
     private StorageType getStorageType() {
-        if (!settings.isEmpty() && settings.containsKey("storage_mode")) {
+        if (settings != null && !settings.isEmpty() &&
+            settings.containsKey("storage_mode")) {
             switch ((String) settings.get("storage_mode")) {
                 case "MEMORY":
                     return StorageType.RAM;
@@ -162,12 +194,17 @@ public class SemReasoner implements RuleEngine {
                     return StorageType.PERSISTENT;
             }
         }
-        return StorageType.PERSISTENT;
+        return StorageType.RAM;
     }
 
     private String getEDBPath() {
-
-        String edbFolder = settings.get("edb_folder").toString();
+        String edbFolder;
+        if (settings != null && !settings.isEmpty() &&
+            settings.containsKey("edb_folder")) {
+            edbFolder = settings.get("edb_folder").toString();
+        } else {
+            edbFolder = "data/" + engineName + "/edb/";
+        }
         File edbFolderFile = new File(edbFolder);
         try {
             if (edbFolderFile.exists()) {
@@ -181,24 +218,48 @@ public class SemReasoner implements RuleEngine {
     }
 
     private String getTempDirPath() {
+        String tempFolder;
 
-        String edbFolder = settings.get("temp_folder").toString();
-        File edbFolderFile = new File(edbFolder);
+        if (settings != null && !settings.isEmpty() &&
+            settings.containsKey("temp_folder")) {
+            tempFolder = settings.get("temp_folder").toString();
+        } else {
+            tempFolder = "data/" + engineName + "/temp/";
+        }
+
+        File tempFolderFile = new File(tempFolder);
         try {
-            if (edbFolderFile.exists()) {
-                FileUtils.deleteDirectory(edbFolderFile);
+            if (tempFolderFile.exists()) {
+                FileUtils.deleteDirectory(tempFolderFile);
             }
         } catch (Exception e) {
             log.error("Error deleting temp folder!", e);
         }
-        edbFolderFile.mkdirs();
-        return edbFolder;
+        tempFolderFile.mkdirs();
+        return tempFolder;
     }
 
     private boolean isTopDownReasoningEnabled() {
-        if (!settings.isEmpty() && settings.containsKey("top_down_reasoning")) {
+        if (settings != null && !settings.isEmpty() &&
+            settings.containsKey("top_down_reasoning")) {
             return (boolean) settings.get("top_down_reasoning");
         }
         return false;
+    }
+
+    private boolean isBodyOrderingEnabled() {
+        if (settings != null && !settings.isEmpty() &&
+            settings.containsKey("body_ordering")) {
+            return (boolean) settings.get("body_ordering");
+        }
+        return false;
+    }
+
+    private int getReasoningThreads() {
+        if (settings != null && !settings.isEmpty() &&
+            settings.containsKey("reasoning_threads")) {
+            return (int) settings.get("reasoning_threads");
+        }
+        return 1;
     }
 }

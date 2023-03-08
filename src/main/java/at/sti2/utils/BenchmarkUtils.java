@@ -104,4 +104,12 @@ public class BenchmarkUtils {
     public static boolean fileExists(String filePath) {
         return new File(filePath).exists();
     }
+
+    public static String getEngineDataFolder(RuleEngine engine) {
+        if (engine.getSettings() != null &&
+            engine.getSettings().containsKey("dataFolderName")) {
+            return (String) engine.getSettings().get("dataFolderName");
+        }
+        return engine.getEngineName();
+    }
 }

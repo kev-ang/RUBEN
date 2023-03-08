@@ -33,7 +33,7 @@ public class Stardog implements RuleEngine {
     public Stardog() {
         log.info("Setting up docker container for stardog evaluation.");
         try {
-            DockerUtils.startContainerForEngine(engineName);
+            DockerUtils.startContainerForEngine("stardog");
             log.info(
                 "Started docker container, waiting for 30 seconds to make sure it is started...");
             Thread.sleep(30 * 1000);
@@ -51,6 +51,11 @@ public class Stardog implements RuleEngine {
     @Override
     public void setEngineName(String engineName) {
         this.engineName = engineName;
+    }
+
+    @Override
+    public Map<String, Object> getSettings() {
+        return null;
     }
 
     @Override
@@ -99,6 +104,12 @@ public class Stardog implements RuleEngine {
                 log.error("Error while preparing stardog!", e);
             }
         }
+    }
+
+    @Override
+    public void materialize(String testDataPath,
+                            TestCaseConfiguration testCase) {
+        // Not supported
     }
 
     @Override

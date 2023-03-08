@@ -10,6 +10,7 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -19,7 +20,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.reasoner.Reasoner;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
 import org.apache.jena.reasoner.rulesys.Rule;
-import org.codehaus.plexus.util.StringUtils;
 
 @Slf4j
 public class Jena implements RuleEngine {
@@ -41,6 +41,11 @@ public class Jena implements RuleEngine {
     @Override
     public void setEngineName(String engineName) {
         this.engineName = engineName;
+    }
+
+    @Override
+    public Map<String, Object> getSettings() {
+        return null;
     }
 
     @Override
@@ -80,6 +85,12 @@ public class Jena implements RuleEngine {
                 log.error("Error preparing data for jena!", e);
             }
         }
+    }
+
+    @Override
+    public void materialize(String testDataPath,
+                            TestCaseConfiguration testCase) {
+        // Not supported
     }
 
     @Override

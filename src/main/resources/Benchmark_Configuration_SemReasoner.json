@@ -3,8 +3,24 @@
   "testDataPath": "/Users/Kevin/Desktop/SemReasoner_Evaluation",
   "engines": [
     {
-      "name": "RDFox",
-      "classpath": "at.sti2.engines.RDFox"
+      "name": "SemReasoner_bottom_up_memory",
+      "classpath": "at.sti2.engines.SemReasoner",
+      "settings": {
+        "dataFolderName": "SemReasoner",
+        "storage_mode": "MEMORY",
+        "reasoning_threads": 8,
+        "body_ordering": false
+      }
+    },
+    {
+      "name": "SemReasoner_bottom_up_persistend",
+      "classpath": "at.sti2.engines.SemReasoner",
+      "settings": {
+        "dataFolderName": "SemReasoner",
+        "storage_mode": "PERSISTEND",
+        "reasoning_threads": 8,
+        "body_ordering": false
+      }
     }
   ],
   "testCases": [
@@ -22,11 +38,6 @@
       "test_case_identifier": "d500_parsize20000_sibsize4000_no_cyc",
       "test_name": "same_generation",
       "category": "datalog_recursion"
-    },
-    {
-      "test_case_identifier": "d1000_parsize10000_sibsize2000",
-      "test_name": "same_generation",
-      "category": "stratified_negation"
     }
   ]
 }

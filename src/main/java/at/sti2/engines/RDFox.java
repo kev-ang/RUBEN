@@ -3,6 +3,7 @@ package at.sti2.engines;
 import at.sti2.configuration.TestCaseConfiguration;
 import at.sti2.utils.BenchmarkUtils;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import tech.oxfordsemantic.jrdfox.Prefixes;
 import tech.oxfordsemantic.jrdfox.client.ConnectionFactory;
 import tech.oxfordsemantic.jrdfox.client.Cursor;
@@ -23,10 +25,10 @@ import tech.oxfordsemantic.jrdfox.exceptions.JRDFoxException;
 public class RDFox implements RuleEngine {
 
     private static final String LICENSE_KEY_PATH =
-        "/Users/Kevin/Documents/GitHub/Kev_ang/RuleEngineBenchmark/src/main/resources/RDFox.lic";
+        "./RDFox.lic";
 
     private static final String SERVER_DIRECTORY_PATH =
-        "/Users/Kevin/Documents/GitHub/Kev_ang/RuleEngineBenchmark/data/rdfox";
+        "./data/rdfox";
 
     private static final String LOCAL_SERVER_URL = "rdfox:local";
 
@@ -97,6 +99,11 @@ public class RDFox implements RuleEngine {
     }
 
     @Override
+    public Map<String, Object> getSettings() {
+        return null;
+    }
+
+    @Override
     public void setSettings(Map<String, Object> settings) {
     }
 
@@ -110,6 +117,8 @@ public class RDFox implements RuleEngine {
                 dataStoreConnection = serverConnection.newDataStoreConnection(
                     DATASTORE_IDENTIFIER);
 
+                dataStoreConnection.setPrefixes(prefixes);
+
                 /*
                 Add all rules before the facts or add rules and facts in an arbitrary order but grouped in a single transaction.
                 This will usually increase the performance of the first reasoning operation.
@@ -121,7 +130,7 @@ public class RDFox implements RuleEngine {
                     BenchmarkUtils.getFilePath(testDataPath, engineName,
                                                testCase, ".rls");
 
-                System.out.println("Importing rules from a file...");
+                log.info("Importing rules from a file {}", absoluteRulePath);
                 loadData(absoluteRulePath);
 
                 long start = System.currentTimeMillis();
@@ -140,12 +149,21 @@ public class RDFox implements RuleEngine {
     }
 
     @Override
+    public void materialize(String testDataPath,
+                            TestCaseConfiguration testCase) {
+        try {
+            dataStoreConnection.recomputeMaterialization();
+        } catch (JRDFoxException e) {
+            log.error("Error while recomputing materialization!", e);
+        }
+    }
+
+    @Override
     public int executeQuery(String query) {
-        try (Cursor cursor = dataStoreConnection.createCursor(null,
-                                                              prefixes,
-                                                              "select * where {" +
-                                                              query + "}",
-                                                              Collections.emptyMap())) {
+        try (Cursor cursor = dataStoreConnection.createCursor(
+            "select * where {" +
+            query + "}",
+            Collections.emptyMap())) {
             int numberOfRows = 0;
             for (long multiplicity = cursor.open(); multiplicity != 0;
                  multiplicity = cursor.advance()) {
@@ -173,7 +191,8 @@ public class RDFox implements RuleEngine {
             dataStoreConnection.clear();
             dataStoreConnection.close();
             serverConnection.close();
-        } catch (JRDFoxException e) {
+            FileUtils.deleteDirectory(new File(SERVER_DIRECTORY_PATH));
+        } catch (JRDFoxException | IOException e) {
             log.error("Error while shutting down RDFox!", e);
         }
     }
@@ -183,10 +202,9 @@ public class RDFox implements RuleEngine {
         throws JRDFoxException {
         HashMap<String, String> parameters = new HashMap<String, String>();
         parameters.put("fact-domain", factDomain);
-        try (Cursor cursor = dataStoreConnection.createCursor(null,
-                                                              Prefixes.s_emptyPrefixes,
-                                                              "SELECT ?X ?Y ?Z WHERE { ?X ?Y ?Z }",
-                                                              parameters)) {
+        try (Cursor cursor = dataStoreConnection.createCursor(
+            "SELECT ?X ?Y ?Z WHERE { ?X ?Y ?Z }",
+            parameters)) {
             dataStoreConnection.beginTransaction(TransactionType.READ_ONLY);
             try {
                 long result = 0;
@@ -206,7 +224,6 @@ public class RDFox implements RuleEngine {
         try (InputStream inputStream = new BufferedInputStream(
             new FileInputStream(dataPath))) {
             dataStoreConnection.importData(UpdateType.ADDITION,
-                                           prefixes,
                                            inputStream);
         }
     }

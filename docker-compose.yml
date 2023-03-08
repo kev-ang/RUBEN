@@ -4,9 +4,10 @@ services:
 
   stardog:
     image: stardog/stardog
+    platform: linux/amd64
     ports:
       - "5820:5820"
     volumes:
       - /Users/Kevin/Desktop/StardogHome/:/var/opt/stardog
     environment:
-      STARDOG_SERVER_JAVA_ARGS: '-Xmx5g -Xms5g -XX:MaxDirectMemorySize=5g'
+      STARDOG_SERVER_JAVA_ARGS: '-Xmx16g -Xms16g'

@@ -30,12 +30,15 @@ public class CSVWriter implements ResultWriter {
                     engine.getKey() + "_" + testCase.getKey() + ".csv");
                 try (BufferedWriter bw = new BufferedWriter(
                     new FileWriter(resultFile))) {
-                    bw.write("Query;NrResults;Time (in ms);Exception");
+                    bw.write(
+                        "Preparation Time;Materialization;Query;NrResults;Time (in ms);Exception");
                     bw.newLine();
                     for (QueryResult currentQuery : testCase.getValue()
                                                             .getQueryResults()
                                                             .values()) {
-                        bw.write(currentQuery.getQuery() + ";" +
+                        bw.write(engine.getValue().getPreparationTime() + ";" +
+                                 testCase.getValue().getMaterializationTime() +
+                                 ";" + currentQuery.getQuery() + ";" +
                                  currentQuery.getNumOfResults() + ";" +
                                  currentQuery.getTimeSpent() + ";" +
                                  currentQuery.getException());
