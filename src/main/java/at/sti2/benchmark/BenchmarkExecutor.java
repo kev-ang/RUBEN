@@ -104,7 +104,7 @@ public class BenchmarkExecutor {
             QueryResult queryResultObject =
                 new QueryResult(query.getName());
             Future<Integer> resultFuture = null;
-            for (var i = 0; i < 2; i++) {
+            for (var i = 0; i <= 2; i++) {
                 long start = System.currentTimeMillis();
                 try {
                     resultFuture =
