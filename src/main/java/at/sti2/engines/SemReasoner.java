@@ -91,22 +91,14 @@ public class SemReasoner implements RuleEngine {
     @Override
     public void materialize(String testDataPath,
                             TestCaseConfiguration testCase) {
-        String materializationFilePath =
-            BenchmarkUtils.getFilePath(testDataPath,
-                                       BenchmarkUtils.getEngineDataFolder(this),
-                                       testCase, ".mat");
-        if (BenchmarkUtils.fileExists(materializationFilePath)) {
-            try {
-                log.info("Loading materialization file from path: {}",
-                         materializationFilePath);
-                ddb.load(new InterruptFlag(), materializationFilePath);
-            } catch (IOException | SemReasonerException e) {
-                log.error("Error while materializing rules!", e);
-            } catch (InterruptedException e) {
-                log.error("Thread was interrupted while materializing rules!",
-                          e);
-                Thread.currentThread().interrupt();
-            }
+        try {
+            ddb.materializeAllRules(new InterruptFlag());
+        } catch (IOException | SemReasonerException e) {
+            log.error("Error while materializing rules!", e);
+        } catch (InterruptedException e) {
+            log.error("Thread was interrupted while materializing rules!",
+                      e);
+            Thread.currentThread().interrupt();
         }
     }
 

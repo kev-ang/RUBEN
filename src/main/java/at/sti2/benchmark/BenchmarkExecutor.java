@@ -101,10 +101,10 @@ public class BenchmarkExecutor {
                                                QueryContainer queryContainer) {
         for (Query query : queryContainer.getQueries()) {
             log.info("Evaluating query: {}", query.getQuery());
-            QueryResult queryResultObject =
-                new QueryResult(query.getName());
             Future<Integer> resultFuture = null;
             for (var i = 0; i <= 2; i++) {
+                QueryResult queryResultObject =
+                    new QueryResult(query.getName());
                 long start = System.currentTimeMillis();
                 try {
                     resultFuture =

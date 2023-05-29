@@ -53,9 +53,6 @@ public class RDFox implements RuleEngine {
         serverParams.put("license-file", LICENSE_KEY_PATH);
         try {
             Map<String, String> serverParameters = new HashMap<>();
-            serverParameters.put("persist-ds", "file");
-            serverParameters.put("persist-roles", "file");
-            serverParameters.put("server-directory", SERVER_DIRECTORY_PATH);
             serverParameters.put("license-file", LICENSE_KEY_PATH);
             String[] warnings =
                 ConnectionFactory.startLocalServer(serverParameters);
@@ -78,7 +75,6 @@ public class RDFox implements RuleEngine {
                 serverConnection.createDataStore(DATASTORE_IDENTIFIER,
                                                  Collections.emptyMap());
             }
-            serverConnection.setNumberOfThreads(2);
 
             prefixes = new Prefixes();
             prefixes.declareStandardPrefixes();
@@ -119,29 +115,21 @@ public class RDFox implements RuleEngine {
 
                 dataStoreConnection.setPrefixes(prefixes);
 
-                /*
-                Add all rules before the facts or add rules and facts in an arbitrary order but grouped in a single transaction.
-                This will usually increase the performance of the first reasoning operation.
-
-                https://www.oxfordsemantic.tech/blog/the-dos-and-donts-of-rule-and-query-writing
-                 */
+                dataStoreConnection.beginTransaction(
+                    TransactionType.READ_WRITE);
 
                 String absoluteRulePath =
                     BenchmarkUtils.getFilePath(testDataPath, engineName,
                                                testCase, ".rls");
 
-                log.info("Importing rules from a file {}", absoluteRulePath);
-                loadData(absoluteRulePath);
-
                 long start = System.currentTimeMillis();
                 log.info("Importing RDF Data from file {}", absoluteDataPath);
                 loadData(absoluteDataPath);
                 long end = System.currentTimeMillis();
-                log.info("Loading took: {} ms", (end - start));
+                log.info("Loading data took: {} ms", (end - start));
 
-                log.info("Number of tuples after import: " +
-                         getTriplesCount(dataStoreConnection, "all"));
-
+                log.info("Importing rules from a file {}", absoluteRulePath);
+                loadData(absoluteRulePath);
             } catch (Exception e) {
                 log.error("Error while preparing RDFox!", e);
             }
@@ -152,7 +140,12 @@ public class RDFox implements RuleEngine {
     public void materialize(String testDataPath,
                             TestCaseConfiguration testCase) {
         try {
-            dataStoreConnection.recomputeMaterialization();
+            long start = System.currentTimeMillis();
+            dataStoreConnection.updateMaterialization();
+            long end = System.currentTimeMillis();
+            log.info("Materialization took {} ms", (end - start));
+
+            dataStoreConnection.commitTransaction();
         } catch (JRDFoxException e) {
             log.error("Error while recomputing materialization!", e);
         }

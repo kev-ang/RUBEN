@@ -28,16 +28,6 @@
       "test_case_identifier": "d1000_relsize250000_cyc",
       "test_name": "join1",
       "category": "large_joins"
-    },
-    {
-      "test_case_identifier": "d500_parsize20000_sibsize4000_cyc",
-      "test_name": "same_generation",
-      "category": "datalog_recursion"
-    },
-    {
-      "test_case_identifier": "d500_parsize20000_sibsize4000_no_cyc",
-      "test_name": "same_generation",
-      "category": "datalog_recursion"
     }
   ]
 }

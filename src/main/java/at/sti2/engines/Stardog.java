@@ -118,7 +118,7 @@ public class Stardog implements RuleEngine {
             databaseConnection
                 .select("select * where {" + query + "}")
                 .timeout(30 * 60 * 1000);
-        aQuery.limit(100000);
+        aQuery.limit(1000000);
         SelectQueryResult result = aQuery.execute();
         int numberOfResults = (int) result.stream().count();
         result.close();
